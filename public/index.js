@@ -1,9 +1,9 @@
 (function index() {
 
-    function User(name, ip, upTime) {
+    function User(name, ip, startTime) {
         this.name = name;
         this.ip = ip;
-        this.upTime = upTime;
+        this.start = startTime;
     }
 
     const addBtn = document.getElementById('submit');
@@ -14,7 +14,7 @@
     let users = [];
 
     addBtn.addEventListener('click', function () {
-        var user = new User(nameField.value, ipField.value, 0);
+        var user = new User(nameField.value, ipField.value, new Date().getTime());
         users.push(user);
         body.insertAdjacentHTML('beforeend',
             `<tr class="loading" id="${users.length-1}">
@@ -95,7 +95,6 @@
                 }
             }
         }
-        users[i].upTime =Math.round(upTime);
         return Math.round(upTime)+' '+ unit;
     }
 

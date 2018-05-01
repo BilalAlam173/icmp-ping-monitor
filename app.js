@@ -1,13 +1,14 @@
 
 
 // // require installed packages
- const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const express = require('express');
 const mongoUrl= 'mongodb://admin:valleyforge16740@ds159033.mlab.com:59033/icmp-ping-monitor';
 const port= process.env.PORT||80;
 const path = require('path');
 const request = require ("request");
 const bodyParser = require('body-parser');
+const ctrl = require('./controller');
 
 var target = 'http://192.168.10.6';
 
@@ -43,10 +44,13 @@ app.post('/ping',function(req,res){
       if(error){
         res.sendStatus(500);
       }else{
-        res.send(response && response.statusCode);
+        res.sendStatus(response && response.statusCode);
       }
 });
 });
+
+app.post('/user',ctrl.insert);
+app.get('/user',ctrl.get);
 
 // start a server on port 3000
 app.listen(port,function(){

@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     name:String,
-    ip:String
+    ip:String,
+    startTime:String,
 });
 
-var User = mongoose.model('User', userSchema);
-exports.default = User;
+module.exports = mongoose.model('User', userSchema);
