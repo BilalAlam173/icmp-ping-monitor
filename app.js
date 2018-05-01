@@ -7,15 +7,9 @@ const mongoUrl= 'mongodb://admin:valleyforge16740@ds159033.mlab.com:59033/icmp-p
 const port= process.env.PORT||80;
 const path = require('path');
 const request = require ("request");
-var target = 'http://192.168.10.6';
-setInterval(function(){
-    request(target, function (error, response, body) {
-  console.log('error:', error); // Print the error if one occurred
-  console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-//   console.log('body:', body); // Print the HTML for the Google homepage.
-});
+const bodyParser = require('body-parser');
 
-},5000)
+var target = 'http://192.168.10.6';
 
 
 // attempt to establisth connection with the server
@@ -39,6 +33,20 @@ const app = express();
 //     res.sendFile(path.join(__dirname+'/public/index.html'));
 // })
 app.use('/', express.static('public'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.post('/ping',function(req,res){
+  const user = req.body;
+
+    request('http://'+user.ip, function (error, response, body) {
+      if(error){
+        res.sendStatus(500);
+      }else{
+        res.send(response && response.statusCode);
+      }
+});
+});
 
 // start a server on port 3000
 app.listen(port,function(){
