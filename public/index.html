@@ -1,8 +1,79 @@
 <html>
-    <head>
-        <title>ICMP ping monitor</title>
-    </head>
-    <body>
-        <h1> ICMP-ping-monitor</h1>
-    </body>
+
+<head>
+  <title>ICMP ping monitor</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" sizes="16x16" />
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row header">
+      <div class="col-lg-12 title">
+        <img class="image" src="assets/logo.png">
+        <h1>ICMP Ping Monitor</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4">
+        <form>
+          <label for="name">Name</label>
+          <input type="text" name="name">
+          <br>
+          <label for="ip">IP address</label>
+          <input type="text" name="ip">
+        </form>
+      </div>
+      <div class="col-lg-4"></div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>IP address</th>
+              <th>status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="online">
+              <td>Default</td>
+              <td>192.168.63.1</td>
+              <td>
+                <span class="dot-online"></span> online</td>
+              <td>
+                <button class="btn btn-primary">
+                  <i class="fa fa-window-close"></i>
+                </button>
+                <button class="btn btn-primary">
+                  <i class="fa fa-edit"></i>
+                </button>
+              </td>
+
+            </tr>
+            <tr class="offline">
+              <td>Default</td>
+              <td>192.168.63.1</td>
+              <td>
+                <span class="dot-offline"></span> offline</td>
+                <td>
+                  <button class="btn btn-primary">
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                  <button class="btn btn-primary">
+                    <i class="fa fa-edit"></i>
+                  </button>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>
