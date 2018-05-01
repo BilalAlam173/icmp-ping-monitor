@@ -5,7 +5,6 @@ const User=require('./model');
 module.exports = {
 
  insert : (req,res)=>{
-     console.log(User);
 
     const user = new User({
          name:req.body.name,
@@ -15,13 +14,11 @@ module.exports = {
 
      // call save funtion on that model's instance
      user.save((err)=>{
-        console.log('test')
          if(err){
              // return error
              res.status(500).json({message :"something went wrong"});
          }else{
              // return success
-             console.log('test')
              res.status(200).json({message:"user added successfully"});
          }
          
