@@ -35,9 +35,10 @@ dbConnection.once('open', function() {
 // initiate express
 const app = express();
 
-app.get('/',function(req,res){
-    res.sendFile(path.join(__dirname+'/public/index.html'));
-})
+// app.get('/',function(req,res){
+//     res.sendFile(path.join(__dirname+'/public/index.html'));
+// })
+app.use('/', express.static('public'));
 
 // start a server on port 3000
 app.listen(port,function(){
