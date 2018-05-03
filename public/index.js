@@ -39,10 +39,23 @@ let remove;
     })
 
     remove = function(elem){
-        var id = elem.dataId;
+        var id=$(elem).attr('data-id');
+        $(`#${id}`).remove();
+        var user = users[id];
         users.splice(id,1);
-        var elem = document.getElementById(id);
-         elem.parentNode.removeChild(elem);
+        deleteUser(user._id);
+    }
+
+    function deleteUser(id){
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("DELETE", `/user/${id}`, true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function () { //Call a function when the state changes.
+            if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status === 200) {
+                window.alert('deleted')
+            }
+        }
+        xhttp.send();
     }
 
     function addUser(user){

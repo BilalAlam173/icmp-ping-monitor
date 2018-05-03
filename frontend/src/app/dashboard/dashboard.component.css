@@ -1,0 +1,43 @@
+.online{
+  background-color: #DCEDC8;
+}
+
+.offline{
+  background-color: #FFCCBC;
+}
+.loading{
+  background-color: #F5F5F5;
+}
+
+.dot-online{
+height: 8px;
+width: 8px;
+background-color: green;
+border-radius: 50%;
+display: inline-block;
+}
+.dot-offline{
+  height: 8px;
+  width: 8px;
+  background-color: red;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-loading{
+  height: 8px;
+  width: 8px;
+  background-color: #9E9E9E;
+  border-radius: 50%;
+  display: inline-block;
+}
+.buffer20{
+    height: 20px;
+}
+label{
+  font-size: 12px;
+  font-weight: 600;
+}
+i{
+  font-size: 12px;
+}
+
