@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class UserService {
-  url = "/user"
+  url = "http://13.236.110.226:3000/user"
 
   constructor(private http: HttpClient) { }
   get() {
