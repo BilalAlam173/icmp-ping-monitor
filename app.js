@@ -78,12 +78,11 @@ function ping(user) {
 }
 
 function notifyChange(user) {
-  ctrl.notify(user, function(info, error){
-    console.log('asdasd')
-    if (info) {
-      console.log(info)
-    }
-  })
+  // ctrl.notify(user, function(info, error){
+  //   if (info) {
+  //     console.log(info)
+  //   }
+  // })
 
 }
 
