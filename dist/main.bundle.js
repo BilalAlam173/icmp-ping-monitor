@@ -322,7 +322,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var UserService = (function () {
     function UserService(http) {
         this.http = http;
-        this.url = "http://13.236.110.226:3000/user";
+        this.url = "http://13.236.110.226/user";
     }
     UserService.prototype.get = function () {
         return this.http.get(this.url);
