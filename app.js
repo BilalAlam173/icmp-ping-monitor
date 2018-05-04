@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const mongoUrl = 'mongodb://admin:valleyforge16740@ds159033.mlab.com:59033/icmp-ping-monitor';
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 3000;
 const path = require('path');
 const request = require("request");
 const bodyParser = require('body-parser');
