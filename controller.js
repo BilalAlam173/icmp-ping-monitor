@@ -1,11 +1,14 @@
 const User = require('./model');
 const nodeMailer = require('nodemailer');
 const receiverEmail = 'bilalalam173@gmail.com'
-const transporter = nodeMailer.createTransport({
-    service: 'gmail',
+require('dotenv').config();
+let transporter = nodeMailer.createTransport({
+    host: process.env.APP_EMAIL_HOST,
+    port: process.env.APP_EMAIL_PORT,
+    secure: false, // true for 465, false for other ports
     auth: {
-        user: 'bilalalam173@gmail.com',
-        pass: 'valleyforge167402'
+        user: process.env.APP_EMAIL_ID, // generated ethereal user
+        pass: process.env.APP_EMAIL_PASSWORD  // generated ethereal password
     }
 });
 

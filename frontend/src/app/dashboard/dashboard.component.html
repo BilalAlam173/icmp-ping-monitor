@@ -1,4 +1,4 @@
-<div class="container">
+<!-- <div class="container">
     <div class="buffer20"></div>
     <div class="row">
       <div class="col-lg-12">
@@ -36,7 +36,54 @@
         </div>
       </div>
     </div>
+</div> -->
+<div class="container container-settings">
+  <div class="row">
+    <div class="col s12">
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">text_format</i>
+          <input id="name" [(ngModel)]="name" name="name" type="text">
+          <label for="name">Name</label>
+        </div>
+        <div class="input-field col s5">
+          <i class="material-icons prefix">network_check</i>
+          <input id="ip" type="text" [(ngModel)]="ip">
+          <label for="ip">IP address</label>
+        </div>
+        <div class="input-field col s1">
+          <button class="btn btn-primary btn-sm" (click)="add()">
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">hdr_strong</i>
+          <input id="name" [(ngModel)]="pingIntervalTime" type="text">
+          <label for="name">Ping Interval</label>
+        </div>
+        <div class="input-field">
+          <button class="btn btn-primary btn-sm" (click)="setPingInterval()">
+            <i class="fa fa-refresh"></i>
+          </button>
+        </div>
+        <div class="input-field col s5">
+          <i class="material-icons prefix">av_timer</i>
+          <input id="ip" [(ngModel)]="fetchIntervalTime" type="text">
+          <label for="ip">Fetch Interval</label>
+        </div>
+        <div class="input-field col s1">
+          <button class="btn btn-primary btn-sm" (click)="setFetchInterval()">
+            <i class="fa fa-refresh"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 
 <div class="container">
   <div class="buffer20"></div>
