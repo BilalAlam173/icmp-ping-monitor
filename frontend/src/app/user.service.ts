@@ -4,8 +4,8 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class UserService {
-  // url = "http://13.236.110.226/user"
-  url = "/user"
+  url = "http://13.236.110.226/user"
+  // url = "/user"
 
   constructor(private http: HttpClient) { }
   get() {
