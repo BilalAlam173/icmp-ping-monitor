@@ -2,10 +2,6 @@ const ctrl = require('./controller');
 const express = require('express');
 const config = require('./config');
 const netPing = require('net-ping');
-const cors = require('cors')
-const corsOptions = {
-  origin: 'http://ping.elevate.tech',
-}
 let pingInterval = 5000;
 let fetchInterval = 5;
 let timer = null;
@@ -61,11 +57,17 @@ function notifyChange(user) {
   })
 
 }
-app.post('/user',cors(corsOptions), ctrl.insert);
-app.get('/user',cors(corsOptions), ctrl.get);
-app.delete('/user/:id',cors(corsOptions), ctrl.delete);
-app.put('/user/:id',cors(corsOptions), ctrl.update);
-app.put('/user/ping/:time',cors(corsOptions), function (req, res) {
+app.use(function (req, res,next ) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Methods', '*');
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  next();
+});
+app.post('/user', ctrl.insert);
+app.get('/user', ctrl.get);
+app.delete('/user/:id', ctrl.delete);
+app.put('/user/:id', ctrl.update);
+app.put('/user/ping/:time', function (req, res) {
   pingInterval = req.params.time * 1000;
   if (timer) {
     clearInterval(timer);
@@ -73,13 +75,13 @@ app.put('/user/ping/:time',cors(corsOptions), function (req, res) {
   }
   res.json(pingInterval / 1000);
 });
-app.put('/user/fetch/:time',cors(corsOptions), function (req, res) {
+app.put('/user/fetch/:time', function (req, res) {
   fetchInterval = req.params.time;
   res.json(fetchInterval);
 });
-app.get('/user/ping',cors(corsOptions), function (req, res) {
+app.get('/user/ping', function (req, res) {
   res.json(pingInterval / 1000);
 });
-app.get('/user/fetch',cors(corsOptions), function (req, res) {
+app.get('/user/fetch', function (req, res) {
   res.json(fetchInterval);
 });
