@@ -16,13 +16,7 @@ const app = express();
 
 config(app);
 
-// ping({name:'test',ip:'1.8.27.1'});
-console.log('sadas00');
-let session = netPing.createSession();
-
-  session.pingHost('1.8.27.1', function (error, target) {
-    console.log(error+'----'+target);
-    });
+ping({name:'test',ip:'1.8.27.1'});
 // timer = setInterval(polling, pingInterval)
 
 function polling() {
