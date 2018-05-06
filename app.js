@@ -35,20 +35,17 @@ function ping(user) {
   var session = netPing.createSession();
 
   session.pingHost(user.ip, function (error, target) {
-  
     if (error) {
       if (user.status) {
         user.status = false;
-        notifyChange(user);
-      }
-        user.status = false;
         user.startTime = 0;
         ctrl.updateSimple(user._id, user);
+      }
 
     } else {
       if (!user.status) {
-        user.status = true;
         notifyChange(user);
+        user.status = true;
         user.startTime = new Date().getTime();
         ctrl.updateSimple(user._id, user);
       }
@@ -57,12 +54,11 @@ function ping(user) {
 }
 
 function notifyChange(user) {
-  console.log(`${user.ip} notify ${user.status}`);
-  // ctrl.notify(user, function (info, error) {
-  //   if (info) {
-  //     console.log(info)
-  //   }
-  // })
+  ctrl.notify(user, function (info, error) {
+    if (info) {
+      console.log(info)
+    }
+  })
 
 }
 app.post('/user',cors(corsOptions), ctrl.insert);
