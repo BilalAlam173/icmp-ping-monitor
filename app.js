@@ -32,15 +32,7 @@ function polling() {
 
 
 function ping(user) {
-  var options = {
-    networkProtocol: netPing.NetworkProtocol.IPv4,
-    packetSize: 16,
-    retries: 0,
-    sessionId: (process.pid % 65535),
-    timeout: 2000,
-    ttl: 128
-};
-  let session = netPing.createSession(options);
+  let session = netPing.createSession({packetSize: 16});
 
   session.pingHost(user.ip, function (error, target) {
     console.log(error+'----'+target);
