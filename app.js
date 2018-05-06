@@ -57,11 +57,11 @@ function notifyChange(user) {
   })
 
 }
-app.options('/', function (req, res) {
+app.use(function (req, res,next ) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader('Access-Control-Allow-Methods', '*');
   res.setHeader("Access-Control-Allow-Headers", "*");
-  res.end();
+  next();
 });
 app.post('/user', ctrl.insert);
 app.get('/user', ctrl.get);
