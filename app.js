@@ -32,7 +32,7 @@ function polling() {
 
 
 function ping(user) {
-  let session = netPing.createSession({packetSize: 16});
+  var session = netPing.createSession();
 
   session.pingHost(user.ip, function (error, target) {
     console.log(error+'----'+target);
@@ -45,7 +45,6 @@ function ping(user) {
         user.status = false;
         user.startTime = 0;
         ctrl.updateSimple(user._id, user);
-        session.close();
 
     } else {
       if (!user.status) {
@@ -53,7 +52,6 @@ function ping(user) {
         notifyChange(user);
         user.startTime = new Date().getTime();
         ctrl.updateSimple(user._id, user);
-        session.close();
       }
     }
   });
