@@ -2,6 +2,7 @@ const ctrl = require('./controller');
 const express = require('express');
 const config = require('./config');
 const netPing = require('net-ping');
+var session = netPing.createSession();
 let pingInterval = 5000;
 let fetchInterval = 5;
 let timer = null;
@@ -32,7 +33,6 @@ function polling() {
 
 
 function ping(user) {
-  var session = netPing.createSession();
 
   session.pingHost(user.ip, function (error, target) {
     if (error) {
@@ -54,11 +54,11 @@ function ping(user) {
 }
 
 function notifyChange(user) {
-  ctrl.notify(user, function (info, error) {
-    if (info) {
-      console.log(info)
-    }
-  })
+  // ctrl.notify(user, function (info, error) {
+  //   if (info) {
+  //     console.log(info)
+  //   }
+  // })
 
 }
 
