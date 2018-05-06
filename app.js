@@ -6,7 +6,11 @@ let pingInterval = 5000;
 let fetchInterval = 5;
 let timer = null;
 const app = express();
-
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://ping.elevate.tech");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 config(app);
 
@@ -57,11 +61,7 @@ function notifyChange(user) {
   })
 
 }
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://ping.elevate.tech");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+
 app.post('/user', ctrl.insert);
 app.get('/user', ctrl.get);
 app.delete('/user/:id', ctrl.delete);
