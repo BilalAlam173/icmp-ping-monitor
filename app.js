@@ -1,4 +1,3 @@
-
 const ctrl = require('./controller');
 const express = require('express');
 const config = require('./config');
@@ -7,6 +6,11 @@ let pingInterval = 5000;
 let fetchInterval = 5;
 let timer = null;
 const app = express();
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://ping.elevate.tech/");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 config(app);
 
@@ -14,7 +18,7 @@ config(app);
 timer = setInterval(polling, pingInterval)
 
 function polling() {
-  console.log('ping initiated after the interval of ' + pingInterval/1000 + ' seconds')
+  console.log('ping initiated after the interval of ' + pingInterval / 1000 + ' seconds')
   ctrl.getSimple((docs, err) => {
     let users = docs;
     if (users.length > 0) {
@@ -50,7 +54,7 @@ function ping(user) {
 }
 
 function notifyChange(user) {
-  ctrl.notify(user, function(info, error){
+  ctrl.notify(user, function (info, error) {
     if (info) {
       console.log(info)
     }
