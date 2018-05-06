@@ -7,7 +7,7 @@ let fetchInterval = 5;
 let timer = null;
 const app = express();
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://ping.elevate.tech");
+  res.header("Access-Control-Allow-Origin", "http://ping.elevate.tech/");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
