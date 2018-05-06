@@ -35,6 +35,7 @@ function ping(user) {
   var session = netPing.createSession();
 
   session.pingHost(user.ip, function (error, target) {
+    console.log(error+'----'+target);
   
     if (error) {
       if (user.status) {
