@@ -34,10 +34,10 @@ function polling() {
 function ping(user) {
   var options = {
     networkProtocol: netPing.NetworkProtocol.IPv4,
-    packetSize: 4,
+    packetSize: 16,
     retries: 0,
     sessionId: (process.pid % 65535),
-    timeout: 1000,
+    timeout: 2000,
     ttl: 128
 };
   let session = netPing.createSession(options);
