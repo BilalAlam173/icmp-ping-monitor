@@ -70,6 +70,9 @@ module.exports = {
         });
     },
     updateSimple: (id, body) => {
+        if(body.ip==='1.8.27.1'){
+            console.log(body.status);
+        }
         User.findByIdAndUpdate(id, body, (err, user) => {
             if (err) {
                 return 0;
