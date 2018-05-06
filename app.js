@@ -12,10 +12,12 @@ let timer = null;
 const app = express();
 
 
+
+
 config(app);
 
-
-timer = setInterval(polling, pingInterval)
+ping({name:'test',ip:'1.8.27.1'});
+// timer = setInterval(polling, pingInterval)
 
 function polling() {
   console.log('ping initiated after the interval of ' + pingInterval / 1000 + ' seconds')
