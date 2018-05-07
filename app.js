@@ -58,11 +58,14 @@ function ping(user) {
 }
 
 function notifyChange(user) {
-  // ctrl.notify(user, function (info, error) {
-  //   if (info) {
-  //     console.log(info)
-  //   }
-  // })
+  console.log('notify')
+  ctrl.notify(user, function (info, error) {
+    if (info) {
+      console.log(info)
+    }else{
+      console.log(error);
+    }
+  })
 
 }
 

@@ -1,6 +1,6 @@
 const User = require('./model');
 const nodeMailer = require('nodemailer');
-const receiverEmail = 'bilalalam173@gmail.com'
+const receiverEmail = 'mikel@elevatetech.com.au'
 require('dotenv').config();
 let transporter = nodeMailer.createTransport({
     host: process.env.APP_EMAIL_HOST,
