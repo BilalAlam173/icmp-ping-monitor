@@ -2,7 +2,8 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
-const mongoUrl = process.env.APP_MONGO_URL;
+const mongoUrl = 'mongodb://localhost:27017/icmp-ping-monitor';
+/*APP_MONGO_URL=mongodb://admin:valleyforge16740@ds159033.mlab.com:59033/icmp-ping-monitor*/
 const port = process.env.PORT || 3000;
 const path = require('path');
 const bodyParser = require('body-parser');
