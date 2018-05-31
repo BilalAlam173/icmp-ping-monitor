@@ -1,7 +1,7 @@
 'use-strict';
 const Connection = require('../models/connection');
 const pingHistoryModel = require('../models/pingHistory');
-const global= require('../config/global');
+const global = require('../config/global');
 
 require('dotenv').config();
 
@@ -11,10 +11,12 @@ module.exports = {
 
     insert: async (req, res) => {
 
-        const existingConnection=await Connection.findOne({ip:req.body.ip});
-        if(existingConnection){
+        const existingConnection = await Connection.findOne({
+            ip: req.body.ip
+        });
+        if (existingConnection) {
             res.status(500).json({
-                message:'The IP address already exists'
+                message: 'The IP address already exists'
             });
             return;
         }
@@ -26,39 +28,40 @@ module.exports = {
             downTimePercent: req.body.downTimePercent,
             averagedLatency: req.body.averagedLatency,
             latencyThreshold_Value: req.body.latencyThreshold_Value,
-            latencyThreshold_pings: req.body.latencyThreshold_pings, 
+            latencyThreshold_pings: req.body.latencyThreshold_pings,
             statusThreshold_Time: req.body.statusThreshold_Time,
             downTimePercentThreshold_Value: req.body.downTimePercentThreshold_Value,
             downTimePercentThreshold_pings: req.body.downTimePercentThreshold_pings,
         });
+        const pingHistory = new pingHistoryModel({
+            connection: connection._id
+        });
 
-        // call save funtion on that model's instance
-        connection.save((err, connection) => {
+        pingHistory.save((err, pingHistory) => {
             if (err) {
-                // return error
                 res.status(500).json({
                     message: "something went wrong"
                 });
             } else {
-                // return success
-                const pingHistory = new pingHistoryModel({
-                    connection: connection._id,
-                    hourlyHistory: {a:'hhvh'}
-                });
-                pingHistory.save((err, pingHistory) => {
+                //alert every component that a new connection has been added
+                connection.pingHistory=pingHistory._id
+                connection.save((err, connection) => {
                     if (err) {
+                        // return error
                         res.status(500).json({
                             message: "something went wrong"
                         });
                     } else {
-                        //alert every component that a new connection has been added
-                        global.isNewConnectionAdded=true;
+                        // return success
+                        global.isNewConnectionAdded = true;
                         res.status(200).json(connection);
                     }
                 });
             }
-
         });
+
+        // call save funtion on that model's instance
+
     },
     get: (req, res) => {
         Connection.find({}, function (err, docs) {
@@ -113,13 +116,15 @@ module.exports = {
     }
 }
 
-const checkExistingIp = (ip)=>{
-        Connection.findOne({ip:ip},(err,connection)=>{
-            if(connection){
-                return true;
-            }else{
-                return false;
-            }
-    
-        });
+const checkExistingIp = (ip) => {
+    Connection.findOne({
+        ip: ip
+    }, (err, connection) => {
+        if (connection) {
+            return true;
+        } else {
+            return false;
+        }
+
+    });
 }

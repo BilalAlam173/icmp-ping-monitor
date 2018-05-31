@@ -16,7 +16,10 @@ function pollingCtrl() {
     global: require('../config/global'),
     timer: {},
     pingInterval: 5,
+    pingsPerHour:0,
+    pingsPerHourCounter:0,
     connections: [],
+    pingHistories:[],
     netPingSession: {},
     loop: _loop,
     sendAlerts: _sendAlert,
@@ -26,6 +29,7 @@ function pollingCtrl() {
 
   //constructor function
   function init() {
+    _module.pingsPerHour=(60*60)/_module.global.pingInterval;
     _module.netPingSession = _module.netPing.createSession();
     _module.timer = setInterval(_module.loop, _module.pingInterval * 1000);
   }
@@ -38,7 +42,8 @@ function pollingCtrl() {
     let global = require('../config/global');
 
     if (global.isNewConnectionAdded || _module.connections.length < 1) {
-      _module.connections = await _module.connectionModel.find({});
+      _module.connections = await _module.connectionModel.find({}).populate('pingHistory');
+      _module.pingHistories = await _module.pingHistoryModel.find({});
       global.isNewConnectionAdded = false;
     }
     if (_module.connections.length > 0) {
@@ -55,6 +60,7 @@ function pollingCtrl() {
 
     _module.netPingSession.pingHost(connection.ip, async function (error, target, sent, rcvd) {
       connection.pingCount++;
+      connection.pingsPerHour=connection.pingsPerHour<_module.pingsPerHour?connection.pingsPerHour+1:0;
       var latency=0;
       var status=0;
       if (error) {
@@ -63,6 +69,20 @@ function pollingCtrl() {
       } else {
        latency=rcvd-sent; 
        status=1;
+       
+      }
+      if(!connection.pingsPerHour){
+        let newHour={
+          timestamp_hour:currentTimeStamp,
+          values:{},
+        }
+        newHour.values[`${connection.pingsPerHour*global.pingInterval}`]=latency;
+        connection.pingHistory.hourlyHistory.push(newHour);
+      }else{
+        let l=connection.pingHistory.hourlyHistory.length-1
+        connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`]=latency;
+        connection.pingHistory.markModified('hourlyHistory');
+
       }
         let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
 
@@ -74,7 +94,8 @@ function pollingCtrl() {
         connection.downTimePercent = 100 - connection.upTimePercent;
 
         //update the connection
-        const updated = await _module.connectionModel.findByIdAndUpdate(connection._id, connection);
+         const connectionUpdated = await _module.connectionModel.findByIdAndUpdate(connection._id, connection);
+         const pingHistoryUpdated = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
     });
   }
 
