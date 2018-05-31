@@ -1,19 +1,13 @@
-'use-strict';
-const Connection = require('../models/connection');
+const connetionModel = require('../models/connection');
 const pingHistoryModel = require('../models/pingHistory');
 const global = require('../config/global');
-
-require('dotenv').config();
-
 
 // expose a set of operations 
 module.exports = {
 
     insert: async (req, res) => {
 
-        const existingConnection = await Connection.findOne({
-            ip: req.body.ip
-        });
+        const existingConnection = await connetionModel.findOne({ip: req.body.ip});
         if (existingConnection) {
             res.status(500).json({
                 message: 'The IP address already exists'
@@ -21,7 +15,7 @@ module.exports = {
             return;
         }
 
-        const connection = new Connection({
+        const connection = new connetionModel({
             name: req.body.name,
             ip: req.body.ip,
             upTimePercent: req.body.upTimePercent,
@@ -64,7 +58,16 @@ module.exports = {
 
     },
     get: (req, res) => {
-        Connection.find({}, function (err, docs) {
+        connetionModel.findOne({_id:req.params.id}, function (err, doc) {
+            if (!err) {
+                res.send(doc);
+            } else {
+                res.sendStatus(500);
+            }
+        });
+    },
+    getAll: (req, res) => {
+        connetionModel.find({}, function (err, docs) {
             if (!err) {
                 res.send(docs);
             } else {
@@ -72,59 +75,38 @@ module.exports = {
             }
         });
     },
-    getSimple: (callback) => {
-        Connection.find({}, function (err, docs) {
-            if (!err) {
-                callback(docs, null);
-            } else {
-                callback(null, err);
-            }
-        });
-    },
     update: (req, res) => {
-        Connection.findByIdAndUpdate(req.params.id, req.body, (err, connection) => {
+        if(!req.params.id){
+            return res
+            .status(500)
+            .send({
+                error: "unsuccessful"
+            })
+        }
+        connetionModel.findByIdAndUpdate(req.params.id, req.body, (err, connection) => {
             if (err) {
                 return res
                     .status(500)
                     .send({
                         error: "unsuccessful"
                     })
-            };
-            res.send({
-                success: "success"
-            });
-        });
-    },
-    updateSimple: (id, body) => {
-        Connection.findByIdAndUpdate(id, body, (err, connection) => {
-            if (err) {
-                return 0;
+            }else{
+                res.send({
+                    success: "success"
+                });
             }
-            return connection;
         });
     },
     delete: (req, res) => {
-        Connection.remove({
+        connetionModel.remove({
             _id: req.params.id
         }, function (err) {
             if (!err) {
+                global.isNewConnectionAdded = true;
                 res.sendStatus(200);
             } else {
                 res.sendStatus(500);
             }
         });
     }
-}
-
-const checkExistingIp = (ip) => {
-    Connection.findOne({
-        ip: ip
-    }, (err, connection) => {
-        if (connection) {
-            return true;
-        } else {
-            return false;
-        }
-
-    });
 }

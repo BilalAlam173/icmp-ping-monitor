@@ -6,7 +6,7 @@ l=current ping's latency
 n=total pings to count average for
 @formula:latest avg value = a+(l-a)/n
 */
-function pollingCtrl() {
+function processCtrl() {
   var _module = {
     netPing: require('net-ping'),
     connectionCtrl: require('./connection'),
@@ -54,7 +54,7 @@ function pollingCtrl() {
     }
   }
   async function _sendPing(connection) {
-    let currentTimeStamp = new Date().now;
+    let currentTimeStamp = new Date();
 
     let global = require('../config/global');
 
@@ -71,9 +71,10 @@ function pollingCtrl() {
        status=1;
        
       }
-      if(!connection.pingsPerHour){
+      if(!connection.pingsPerHour||global.pingIntervalChanged){
         let newHour={
           timestamp_hour:currentTimeStamp,
+          interval:global.pingInterval,
           values:{},
         }
         newHour.values[`${connection.pingsPerHour*global.pingInterval}`]=latency;
@@ -113,4 +114,4 @@ function pollingCtrl() {
 }
 
 
-module.exports = pollingCtrl();
+module.exports = processCtrl();

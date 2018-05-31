@@ -1,11 +1,15 @@
-const authCtrl=require('./controllers/auth');
+const settingCtrl=require('./controllers/setting');
 const connectionCtrl = require('./controllers/connection');
 
 
 module.exports = (app)=>{
 
-  app.post('/api/login', authCtrl.login);
+  app.post('/api/login', settingCtrl.login);
   app.post('/api/connection', connectionCtrl.insert);
+  app.get('/api/connection/:id', connectionCtrl.get);
+  app.get('/api/connection', connectionCtrl.getAll);
+  app.put('/api/connection/:id', connectionCtrl.update);
+  app.delete('/api/connection/:id', connectionCtrl.delete);
   // app.post('/user',cors(corsOptions), ctrl.insert);
   // app.get('/user',cors(corsOptions), ctrl.get);
   // app.delete('/user/:id',cors(corsOptions), ctrl.delete);
