@@ -1,4 +1,4 @@
-const userModel = require('../models/user');
+const settingsModel = require('../models/setting');
 const helperFns = require('../config/helper-fns');
 module.exports = {
     login: (req, res) => {
@@ -6,7 +6,7 @@ module.exports = {
             username: req.body.email,
             password: req.body.password
         };
-        userModel.findOne(query, (err, user) => {
+        settingsModel.findOne(query, (err, user) => {
             if (err || !user) {
                 res.sendStatus(500);
             } else {

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const settingsSchema = new Schema({
+const settingSchema = new Schema({
     sender_emailId:String,
     sender_emailPassword:String,
     sender_emailHost:String,
@@ -13,4 +13,4 @@ const settingsSchema = new Schema({
     password:String,
 });
 
-module.exports = mongoose.model('Settings', settings);
+module.exports = mongoose.model('Setting', settingSchema);

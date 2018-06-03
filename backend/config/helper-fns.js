@@ -1,4 +1,4 @@
-const helperFns = helper - fns || {};
+const helperFns = {};
 helperFns.toPings = function (time, unit) {
     if (isNaN(Number(time))) {
         return null;
@@ -60,4 +60,23 @@ helperFns.toSeconds = function (time, unit) {
             break;
     }
 }
+
+helperFns.getHistory = function(values,range){
+    let i=1;
+    let n=Object.keys(values).length;
+    let r=n-range;
+    var data=[];
+    for(var key in values){
+        if(i>r){
+            let obj={};
+            obj[`${key}`]=values[key];
+            data.push(obj);
+
+        }
+        i++
+    }
+    return data;
+
+}
+
 module.exports = helperFns;

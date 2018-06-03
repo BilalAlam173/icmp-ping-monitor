@@ -1,5 +1,6 @@
 const settingCtrl=require('./controllers/setting');
 const connectionCtrl = require('./controllers/connection');
+const pingHistoryCtrl= require('./controllers/pingHistory');
 
 
 module.exports = (app)=>{
@@ -10,6 +11,7 @@ module.exports = (app)=>{
   app.get('/api/connection', connectionCtrl.getAll);
   app.put('/api/connection/:id', connectionCtrl.update);
   app.delete('/api/connection/:id', connectionCtrl.delete);
+  app.post('/api/pingHistory/:id',pingHistoryCtrl.get);
   // app.post('/user',cors(corsOptions), ctrl.insert);
   // app.get('/user',cors(corsOptions), ctrl.get);
   // app.delete('/user/:id',cors(corsOptions), ctrl.delete);
