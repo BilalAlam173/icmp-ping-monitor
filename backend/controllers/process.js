@@ -88,7 +88,7 @@ function processCtrl() {
 
       }
       let settings = await _module.settingModel.find({});
-      global.timePeriod= settings[0].timePeriod;
+      global= settings[0];
         let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
 
         connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
@@ -99,7 +99,7 @@ function processCtrl() {
         }
 
         if(connection.latencyThreshold_count>connection.latencyThreshold_pings){
-          const alert = await _module.emailCtrl.notify(connection,`The averaged latency is below ${connection.latencyThreshold_Value} for $(`);
+          const alert = await _module.emailCtrl.notify(connection,`The averaged latency is below ${connection.latencyThreshold_Value} for ${connection.latencyThreshold_pings*global.pingInterval}`);
         }
 
         let upTime = connection.upTimePercent / 100;
