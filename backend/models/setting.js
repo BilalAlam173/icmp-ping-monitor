@@ -9,6 +9,7 @@ const settingSchema = new Schema({
     sender_emailPort:Number,
     reciever_emailId:String,
     pingInterval:{ type: Number, default: 5 },
+    timePeriod:{ type: Number, default: 720 },
     username:String,
     password:String,
 });

@@ -11,8 +11,10 @@ function processCtrl() {
     netPing: require('net-ping'),
     connectionCtrl: require('./connection'),
     pingHistoryCtrl: require('./pingHistory'),
+    emailCtrl: require('./email'),
     connectionModel: require('../models/connection'),
     pingHistoryModel: require('../models/pingHistory'),
+    settingModel:require('../models/setting'),
     global: require('../config/global'),
     timer: {},
     pingInterval: 5,
@@ -22,7 +24,7 @@ function processCtrl() {
     pingHistories:[],
     netPingSession: {},
     loop: _loop,
-    sendAlerts: _sendAlert,
+    sendAlert: _sendAlert,
     sendPing: _sendPing,
 
   }
@@ -85,9 +87,20 @@ function processCtrl() {
         connection.pingHistory.markModified('hourlyHistory');
 
       }
+      let settings = await _module.settingModel.find({});
+      global.timePeriod= settings[0].timePeriod;
         let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
 
         connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
+        if(connection.averagedLatency>connection.latencyThreshold_Value){
+          connection.latencyThreshold_count++;
+        }else{
+          connection.latencyThreshold_count=0;
+        }
+
+        if(connection.latencyThreshold_count>connection.latencyThreshold_pings){
+          const alert = await _module.emailCtrl.notify(connection,`The averaged latency is below ${connection.latencyThreshold_Value} for $(`);
+        }
 
         let upTime = connection.upTimePercent / 100;
         connection.upTimePercent = Math.floor(upTime + ((status - upTime) / n)) * 100;
@@ -100,16 +113,15 @@ function processCtrl() {
     });
   }
 
-  function _sendAlert(user) {
+  function _sendAlert(connection) {
     console.log('notify')
-    ctrl.notify(user, function (info, error) {
+    _module.emailCtrl.notify(connection, function (info, error) {
       if (info) {
         console.log(info)
       } else {
         console.log(error);
       }
     })
-
   }
 }
 

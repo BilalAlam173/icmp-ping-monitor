@@ -6,7 +6,7 @@ module.exports = {
 
     get: async (req, res) => {
         let options = req.body.options;
-        let filters = options && options.filters ? options.filter : null;
+        let filters = options && options.filters ? options.filters : null;
         let timeFilter;
 
         if (Array.isArray(filters) && filters.length > 0) {
@@ -44,7 +44,5 @@ module.exports = {
             }
             res.json(Array.prototype.concat.apply([], data));
         }
-
-
     },
 }

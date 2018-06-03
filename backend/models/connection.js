@@ -8,11 +8,13 @@ const connectionSchema = new Schema({
     upTimePercent:Number,
     downTimePercent:Number,
     averagedLatency:{type:Number,default:0},
-    latencyThreshold_Value:{type:Number,default:0},//milliseconds
-    latencyThreshold_pings:{type:Number,default:0},//no of pings
-    statusThreshold_Time:{type:Number,default:0},//seconds
-    downTimePercentThreshold_Value:{type:Number,default:0},//percent
-    downTimePercentThreshold_pings:{type:Number,default:0},//no of pings
+    latencyThreshold_Value:{type:Number,default:1000},//milliseconds
+    latencyThreshold_pings:{type:Number,default:120},
+    latencyThreshold_count:{type:Number,default:0},//no of pings
+    statusThreshold_pings:{type:Number,default:12},//no of pings
+    downTimePercentThreshold_Value:{type:Number,default:75},//percent
+    downTimePercentThreshold_pings:{type:Number,default:120},
+    downTimePercentThreshold_count:{type:Number,default:0},//no of pings
     lastRecordedHistory:Date,
     pingCount:{type:Number,default:0},
     pingHistory:{type: mongoose.Schema.Types.ObjectId, ref: 'PingHistory'},

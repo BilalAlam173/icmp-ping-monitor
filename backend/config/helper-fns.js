@@ -30,6 +30,38 @@ helperFns.toPings = function (time, unit) {
     }
 }
 
+helperFns.toProperFormat = function (time) {
+    let units = [{
+        value: 60,
+        symbol: 'm'
+    }, {
+        value: 60,
+        symbol: 'h'
+    }, {
+        value: 24,
+        symbol: 'd'
+    }, {
+        value: 30,
+        symbol: 'mo'
+    }, {
+        value: 12,
+        symbol: 'y'
+    }];
+    for (var i = 0; i < units.length; i++) {
+        if (units[i].value > time) {
+            if (i > 0) {
+                return `${time} ${units[i-1].symbol}`;
+            } else if(i==units.length-1){
+                return `${time} ${units[i].symbol}`;
+            }
+             else {
+                return `${time}s`;
+            }
+        }
+        time =Math.round(time/units[i].value);
+    }
+}
+
 helperFns.toSeconds = function (time, unit) {
     if (isNaN(Number(time))) {
         return null;
@@ -61,15 +93,15 @@ helperFns.toSeconds = function (time, unit) {
     }
 }
 
-helperFns.getHistory = function(values,range){
-    let i=1;
-    let n=Object.keys(values).length;
-    let r=n-range;
-    var data=[];
-    for(var key in values){
-        if(i>r){
-            let obj={};
-            obj[`${key}`]=values[key];
+helperFns.getHistory = function (values, range) {
+    let i = 1;
+    let n = Object.keys(values).length;
+    let r = n - range;
+    var data = [];
+    for (var key in values) {
+        if (i > r) {
+            let obj = {};
+            obj[`${key}`] = values[key];
             data.push(obj);
 
         }
