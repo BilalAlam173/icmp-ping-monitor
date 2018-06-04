@@ -1,53 +1,61 @@
 const nodeMailer = require('nodemailer');
-
-let transporter = nodeMailer.createTransport({
-    host: process.env.APP_EMAIL_HOST,
-    port: process.env.APP_EMAIL_PORT,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: process.env.APP_EMAIL_ID, // generated ethereal connection
-        pass: process.env.APP_EMAIL_PASSWORD // generated ethereal password
-    }
-});
-
+const settingModel = require('../models/setting');
 module.exports = {
 
-    alert(connection,message,status, callback) {
+    alert: async (connection, message, status, callback) => {
+
+        const setting = await settingModel.find({});
+
+        let transporter = nodeMailer.createTransport({
+            host: setting[0].sender_emailHost,
+            port: setting[0].sender_emailPort,
+            secure: true, // true for 465, false for other ports
+            auth: {
+                user: setting[0].sender_emailId, // generated ethereal connection
+                pass: setting[0].sender_emailPassword // generated ethereal password
+            }
+        });
+
         let mailOptions = {
             from: '"ICM ping monitor"', // sender address
-            to: receiverEmail, // list of receivers
+            to: setting[0].reciever_emailId, // list of receivers
             subject: 'Status change alert', // Subject line
-            html: `<html>388E3C
+            html: `<html>
             <head>
-                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-                <!-- Bootstrap core CSS -->
-                <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-                <!-- Material Design Bootstrap -->
-                <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/css/mdb.min.css" rel="stylesheet">
-                <head>
-                    <body>
-                      <div style="height:20x"></div>
-                        <div class="container">
-                            <div class="row" style="border-bottom:solid 0.5px #BDBDBD;border-left:solid 0.5px #BDBDBD;border-right:solid 0.5px #BDBDBD;height:400px">
-                                <div class="col-lg-1" style="text-align:center;border-top:5px solid ${status?'#388E3C':'#FF5252'};height:20px;color:#">
-                                  <b>Ping Monitor</b>
-                                  <div style="margin-top:15%"></div>
-                                  <div><b>Test</b>  <code>1.1.1.4</code></div>
-                                   <div>${message}</div>
-                                </div>
-                        </div>
-                    </body>
+              <meta charset="utf-8">
+            </head>
+            <body style="font: 15px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 300; color: #7E899B;">
+              <div id="email" style="margin: 25px auto; text-align: center; background: #fff;">
+                <h1 style="text-align:Center">Ping monitor</h1>
+                <table id="content" style="text-align: center; margin: 0 auto; padding: 150px 0; border-color: #E6EDF4; border-radius: 3px; border-style: solid; border-width: 1px 1px 1px; width: 100%; max-width: 600px; border-top: 2px solid ${status?`#43A047`:`#F12E65`};"
+                  width="100%" align="center">
+                  <tbody>
+                    <td width="25px"></td>
+                    <td>
+                      <div id="name" style="font-size: 22px; font-weight: 400; color: #1C2023;">${connection.name}
+                        <code>${connection.ip}</cod>
+                      </div>
+                      <div id="message">${message}</div>
+                    </td>
+                    <td width="25px"></td>
+                  </tbody>
+                </table>
+                <div id="link" style="padding: 30px 0;">
+                  <a href="#" style="text-decoration: none; border: none; display: inline-block; background: white; border: 1px solid #E6EDF4; font-weight: 400; color: inherit; line-height: 1; padding: 12px 28px 12px; font-size: 0.8rem; font-family: inherit; outline: none; cursor: pointer; border: 1px solid #E6EDF4; border-radius: 35px;">go to app</a>
+                </div>
+              </div>
+            </body>
             </html>`
         };
-        
-        
+
+
 
         transporter.sendMail(mailOptions, (error, info) => {
             console.log(error)
             if (error) {
-                callback(null, error);
+                return error
             } else {
-                callback(info, null)
+                return info
             }
         });
     }

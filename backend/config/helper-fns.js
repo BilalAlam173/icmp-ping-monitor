@@ -50,9 +50,9 @@ helperFns.toProperFormat = function (time) {
     for (var i = 0; i < units.length; i++) {
         if (units[i].value > time) {
             if (i > 0) {
-                return `${time} ${units[i-1].symbol}`;
+                return `${time}${units[i-1].symbol}`;
             } else if(i==units.length-1){
-                return `${time} ${units[i].symbol}`;
+                return `${time}${units[i].symbol}`;
             }
              else {
                 return `${time}s`;

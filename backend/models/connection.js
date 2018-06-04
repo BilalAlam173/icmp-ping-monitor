@@ -7,11 +7,13 @@ const connectionSchema = new Schema({
     ip:String,
     upTimePercent:Number,
     downTimePercent:Number,
+    status:{type:Number,default:-1},
     averagedLatency:{type:Number,default:0},
     latencyThreshold_Value:{type:Number,default:1000},//milliseconds
     latencyThreshold_pings:{type:Number,default:120},
     latencyThreshold_count:{type:Number,default:0},//no of pings
-    statusThreshold_pings:{type:Number,default:12},//no of pings
+    statusThreshold_pings:{type:Number,default:12},
+    statusThreshold_count:{type:Number,default:0},//no of pings
     downTimePercentThreshold_Value:{type:Number,default:75},//percent
     downTimePercentThreshold_pings:{type:Number,default:120},
     downTimePercentThreshold_count:{type:Number,default:0},//no of pings

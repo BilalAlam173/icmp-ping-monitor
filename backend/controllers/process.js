@@ -14,14 +14,15 @@ function processCtrl() {
     emailCtrl: require('./email'),
     connectionModel: require('../models/connection'),
     pingHistoryModel: require('../models/pingHistory'),
-    settingModel:require('../models/setting'),
+    settingModel: require('../models/setting'),
     global: require('../config/global'),
+    helperFns: require('../config/helper-fns'),
     timer: {},
     pingInterval: 5,
-    pingsPerHour:0,
-    pingsPerHourCounter:0,
+    pingsPerHour: 0,
+    pingsPerHourCounter: 0,
     connections: [],
-    pingHistories:[],
+    pingHistories: [],
     netPingSession: {},
     loop: _loop,
     sendAlert: _sendAlert,
@@ -31,7 +32,7 @@ function processCtrl() {
 
   //constructor function
   function init() {
-    _module.pingsPerHour=(60*60)/_module.global.pingInterval;
+    _module.pingsPerHour = (60 * 60) / _module.global.pingInterval;
     _module.netPingSession = _module.netPing.createSession();
     _module.timer = setInterval(_module.loop, _module.pingInterval * 1000);
   }
@@ -62,67 +63,94 @@ function processCtrl() {
 
     _module.netPingSession.pingHost(connection.ip, async function (error, target, sent, rcvd) {
       connection.pingCount++;
-      connection.pingsPerHour=connection.pingsPerHour<_module.pingsPerHour?connection.pingsPerHour+1:0;
-      var latency=0;
-      var status=0;
+      const statusCache = connection.status;
+      connection.pingsPerHour = connection.pingsPerHour < _module.pingsPerHour ? connection.pingsPerHour + 1 : 0;
+      var latency = 0;
+      var status = 0;
       if (error) {
         //pingfails
 
       } else {
-       latency=rcvd-sent; 
-       status=1;
-       
+        latency = rcvd - sent;
+        status = 1;
+
       }
-      if(!connection.pingsPerHour||global.pingIntervalChanged){
-        let newHour={
-          timestamp_hour:currentTimeStamp,
-          interval:global.pingInterval,
-          values:{},
+      if (!connection.pingsPerHour || global.pingIntervalChanged) {
+        let newHour = {
+          timestamp_hour: currentTimeStamp,
+          interval: global.pingInterval,
+          values: {},
         }
-        newHour.values[`${connection.pingsPerHour*global.pingInterval}`]=latency;
+        newHour.values[`${connection.pingsPerHour*global.pingInterval}`] = latency;
         connection.pingHistory.hourlyHistory.push(newHour);
-      }else{
-        let l=connection.pingHistory.hourlyHistory.length-1
-        connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`]=latency;
+      } else {
+        let l = connection.pingHistory.hourlyHistory.length - 1
+        connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`] = latency;
         connection.pingHistory.markModified('hourlyHistory');
 
       }
       let settings = await _module.settingModel.find({});
-      global= settings[0];
-        let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
+      global = settings[0];
+      let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
 
-        connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
-        if(connection.averagedLatency>connection.latencyThreshold_Value){
-          connection.latencyThreshold_count++;
-        }else{
-          connection.latencyThreshold_count=0;
-        }
+      connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
 
-        if(connection.latencyThreshold_count>connection.latencyThreshold_pings){
-          const alert = await _module.emailCtrl.notify(connection,`The averaged latency is below ${connection.latencyThreshold_Value} for ${connection.latencyThreshold_pings*global.pingInterval}`);
-        }
+      let upTime = connection.upTimePercent / 100;
+      connection.upTimePercent = Math.floor(upTime + ((status - upTime) / n)) * 100;
 
-        let upTime = connection.upTimePercent / 100;
-        connection.upTimePercent = Math.floor(upTime + ((status - upTime) / n)) * 100;
+      connection.downTimePercent = 100 - connection.upTimePercent;
 
-        connection.downTimePercent = 100 - connection.upTimePercent;
+      connection = await _module.sendAlert(connection, global);
 
-        //update the connection
-         const connectionUpdated = await _module.connectionModel.findByIdAndUpdate(connection._id, connection);
-         const pingHistoryUpdated = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
+      if(statusCache !==connection.status && connection.message){
+        const alert = await _module.emailCtrl.alert(connection,connection.message,Boolean(connection.status));
+      }
+
+      //update the connection
+      const connectionUpdated = await _module.connectionModel.findByIdAndUpdate(connection._id, connection);
+      const pingHistoryUpdated = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
     });
   }
 
-  function _sendAlert(connection) {
-    console.log('notify')
-    _module.emailCtrl.notify(connection, function (info, error) {
-      if (info) {
-        console.log(info)
-      } else {
-        console.log(error);
-      }
-    })
+  async function _sendAlert(connection, global) {
+
+    //latency
+    if (connection.averagedLatency > connection.latencyThreshold_Value) {
+      connection.latencyThreshold_count++;
+    } else {
+      connection.latencyThreshold_count = 0;
+    }
+
+    if (connection.latencyThreshold_count > connection.latencyThreshold_pings) {
+      connection.status = 0;
+      connection.message=`The averaged latency is above ${connection.latencyThreshold_Value} for ${connection.latencyThreshold_pings*global.pingInterval}s`
+      
+    }
+
+    //downtime
+    if (connection.downTimePercent > connection.downTimePercentThreshold_Value) {
+      connection.downTimePercentThreshold_count++;
+    } else {
+      connection.downTimePercentThreshold_count = 0;
+    }
+
+    if (connection.downTimePercentThreshold_count > connection.downTimePercentThreshold_pings) {
+      connection.status = 0;
+      connection.message=`The down time is above ${connection.downTimePercentThreshold_Value}% for ${_module.helperFns.toProperFormat(connection.downTimePercentThreshold_Value*global.pingInterval)}`;
+    }
+    //status
+    if (connection.status < 1) {
+      connection.statusThreshold_count++;
+    } else {
+      connection.statusThreshold_count = 0;
+    }
+
+    if (connection.statusThreshold_count > connection.statusThreshold_pings) {
+      connection.message=`The IP is constantly down for ${connection.statusThreshold_pings*global.pingInterval}s`;
+    }
+    return connection;
   }
+
 }
 
 
