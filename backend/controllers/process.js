@@ -66,13 +66,12 @@ function processCtrl() {
       const statusCache = connection.status;
       connection.pingsPerHour = connection.pingsPerHour < _module.pingsPerHour ? connection.pingsPerHour + 1 : 0;
       var latency = 0;
-      var status = 0;
       if (error) {
         //pingfails
 
       } else {
         latency = rcvd - sent;
-        status = 1;
+        connection.status = 1;
 
       }
       if (!connection.pingsPerHour || global.pingIntervalChanged) {
@@ -96,7 +95,7 @@ function processCtrl() {
       connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
 
       let upTime = connection.upTimePercent / 100;
-      connection.upTimePercent = Math.floor(upTime + ((status - upTime) / n)) * 100;
+      connection.upTimePercent = Math.floor(upTime + ((connection.status<=0?0:1 - upTime) / n)) * 100;
 
       connection.downTimePercent = 100 - connection.upTimePercent;
 
@@ -136,7 +135,7 @@ function processCtrl() {
 
     if (connection.downTimePercentThreshold_count > connection.downTimePercentThreshold_pings) {
       connection.status = 0;
-      connection.message=`The down time is above ${connection.downTimePercentThreshold_Value}% for ${_module.helperFns.toProperFormat(connection.downTimePercentThreshold_Value*global.pingInterval)}`;
+      connection.message=`The loss percentage is above ${connection.downTimePercentThreshold_Value}% for ${_module.helperFns.toProperFormat(connection.downTimePercentThreshold_Value*global.pingInterval)}`;
     }
     //status
     if (connection.status < 1) {
