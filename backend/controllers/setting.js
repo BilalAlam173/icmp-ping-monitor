@@ -3,14 +3,15 @@ const helperFns = require('../config/helper-fns');
 module.exports = {
     login: (req, res) => {
         const query = {
-            username: req.body.username,
+            username: req.body.email,
             password: req.body.password
         };
         settingsModel.findOne(query, (err, user) => {
             if (err || !user) {
                 res.status(500).send('Incorrect username or password.')
             } else {
-                res.sendStatus(200);
+                user.token='123123';
+                res.send(user);
             }
         });
 
