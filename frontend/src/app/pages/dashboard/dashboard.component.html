@@ -1,5 +1,12 @@
 <div class="row">
-  <nb-card>
-    <nb-card-body><div class="alert alert-success">hooray</div></nb-card-body>
-  </nb-card>
+    <nb-card>
+        <nb-card-header>
+          Connections
+        </nb-card-header>
+
+        <nb-card-body>
+          <ng2-smart-table [settings]="settings" [source]="source" (userRowSelect)="onUserRowSelect($event)" (deleteConfirm)="onDeleteConfirm($event)" (editConfirm)="onEditConfirm($event)">
+          </ng2-smart-table>
+        </nb-card-body>
+      </nb-card>
 </div>

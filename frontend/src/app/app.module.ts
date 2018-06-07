@@ -15,6 +15,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { ThemeModule } from './@theme/theme.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginComponent } from './login/login.component';
+import { global } from './global';
 
 @NgModule({
   declarations: [AppComponent, LoginComponent],
@@ -29,7 +30,7 @@ import { LoginComponent } from './login/login.component';
     CoreModule.forRoot(),
   ],
   bootstrap: [AppComponent],
-  providers: [
+  providers: [global,
     { provide: APP_BASE_HREF, useValue: '/' },
   ],
 })

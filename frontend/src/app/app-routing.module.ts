@@ -2,10 +2,11 @@ import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { LoginComponent } from './login/login.component';
 import { NbAuthComponent,NbLoginComponent } from '@nebular/auth';
+import { AuthGuard } from './auth.guard';
 
 
 const routes: Routes = [
-  { path: 'pages', loadChildren: 'app/pages/pages.module#PagesModule' },
+  { path: 'pages', loadChildren: 'app/pages/pages.module#PagesModule',canActivate:[AuthGuard], },
   {
     path: 'auth',
     component: NbAuthComponent,
@@ -31,6 +32,7 @@ const config: ExtraOptions = {
 @NgModule({
   imports: [RouterModule.forRoot(routes, config)],
   exports: [RouterModule],
+  providers:[AuthGuard]
 })
 export class AppRoutingModule {
 }
