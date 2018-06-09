@@ -10,7 +10,9 @@ const bodyParser = require('body-parser');
 
 module.exports = function(app){
 // attempt to establisth connection with the server
-mongoose.connect(mongoUrl);
+mongoose.connect(mongoUrl).then(function(res){
+  console.log(res);
+});
 
 // get the connection's instance
 const dbConnection = mongoose.connection;
