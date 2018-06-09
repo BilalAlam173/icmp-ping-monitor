@@ -31,9 +31,9 @@ module.exports = {
         const pingHistory = new pingHistoryModel({
             connection: connection._id
         });
-
+        console.log("POST CONEECTION RECIEVED 1")
         pingHistory.save((err, pingHistory) => {
-            console.log("POST CONEECTION RECIEVED")
+            console.log("POST CONEECTION RECIEVED 2")
             if (err) {
                 res.status(500).json({
                     message: "something went wrong"
