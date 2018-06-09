@@ -48,7 +48,7 @@ module.exports = {
                     } else {
                         // return success
                         global.isNewConnectionAdded = true;
-                        res.status(200).json(connection);
+                        res.send(connection);
                     }
                 });
             }
@@ -103,7 +103,7 @@ module.exports = {
         }, function (err) {
             if (!err) {
                 global.isNewConnectionAdded = true;
-                res.sendStatus(200);
+                res.send({id:req.params.id});
             } else {
                 res.sendStatus(500);
             }

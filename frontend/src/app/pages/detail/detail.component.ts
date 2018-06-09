@@ -13,10 +13,24 @@ export class DetailComponent implements AfterViewInit {
   data = [
     ['Time', 'Latency']
   ];
+  timeFilter = [];
+  options ={
+    "filters":[
+      {
+         "type":"timeFilter",
+         "value":"10",
+         "unit":"m"
+      }]
+  }
+
 
   constructor(private _detailService:DetailService,private route:ActivatedRoute) { }
 
   ngAfterViewInit() {
+    this.loadChart();
+  }
+  loadChart(){
+    this.timeFilter=this._detailService.timeFilter;
     this.route.params.subscribe((res)=>{
       this.getData(res);
 
@@ -25,12 +39,13 @@ export class DetailComponent implements AfterViewInit {
       setInterval(()=>{
         this.getData(res);
 
-      },3000);
+      },5000);
     })
   }
 
   getData(res){
-    this._detailService.getData(res.id).subscribe((res:Array<any>)=>{
+    console.log('break')
+    this._detailService.getData(res.id,this.options).subscribe((res:Array<any>)=>{
       this.data = [
         ['Time', 'Latency']
       ];
@@ -41,8 +56,6 @@ export class DetailComponent implements AfterViewInit {
         item.push(value);
         this.data.push(item);
       }
-      console.log(res);
-      console.log(this.data);
       this.drawChart();
     },(err)=>{
       console.log(err);
@@ -61,6 +74,18 @@ export class DetailComponent implements AfterViewInit {
     var chart = new google.visualization.LineChart(this.myChart.nativeElement);
 
     chart.draw(data, options);
+  }
+
+  onChange(value){
+    let obj =this.timeFilter[value];
+    this.options.filters=[
+      {
+         "type":"timeFilter",
+         "value":obj.value,
+         "unit":obj.unit
+      }];
+
+      this.loadChart();
   }
 
 }

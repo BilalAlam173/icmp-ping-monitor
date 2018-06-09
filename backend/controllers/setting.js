@@ -30,9 +30,18 @@ module.exports = {
             if (err) {
                 res.sendStatus(500);
             } else {
-                res.sendStatus(200);
+                res.send(doc);
             }
         });
+    },
+    get:async (req,res)=>{
+        const settings = await settingsModel.find({});
+
+        if(settings&& settings.length>0){
+            res.send(settings[0]);
+        }else{
+            res.sendStatus(500);
+        }
     },
     update: async (req, res) => {
         const doc = await settingsModel.find({});
@@ -54,7 +63,7 @@ module.exports = {
             if (err) {
                 res.sendStatus(500);
             } else {
-                res.sendStatus(200);
+                res.send(doc);
             }
         });
     },
@@ -65,7 +74,7 @@ module.exports = {
             if (intervalInSeconds) {
                 global.pingInterval = intervalInSeconds;
                 global.pingIntervalChanged = true;
-                res.sendStatus(200);
+                res.send({});
             } else {
                 res.sendStatus(500).json({
                     message: 'incorrect data provided',

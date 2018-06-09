@@ -5,23 +5,15 @@
       <div _ngcontent-c31="" class="col-sm-6">
         <div _ngcontent-c31="" class="form-group">
           <label _ngcontent-c31="" for="inputFirstName">Ping Interval(s)</label>
-          <input _ngcontent-c31="" class="form-control" id="pingInterval" placeholder="Ping Interval in seconds" type="number">
+          <input _ngcontent-c31="" class="form-control" id="pingInterval" [(ngModel)]="setting.pingInterval" placeholder="Ping Interval in seconds" type="number">
         </div>
       </div>
       <div _ngcontent-c31="" class="col-sm-6">
         <div _ngcontent-c32="" class="form-group">
           <label _ngcontent-c32="">Time period (for averaged calculation)</label>
-          <select _ngcontent-c32="" class="form-control">
-            <option _ngcontent-c32="">1 minute</option>
-            <option _ngcontent-c32="">10 minutes</option>
-            <option _ngcontent-c32="">1 hour</option>
-            <option _ngcontent-c32="">3 hours</option>
-            <option _ngcontent-c32="">6 hours</option>
-            <option _ngcontent-c32="">6 hours</option>
-            <option _ngcontent-c32="">12 hours</option>
-            <option _ngcontent-c32="">1 day</option>
-            <option _ngcontent-c32="">7 days</option>
-            <option _ngcontent-c32="">1 month</option>
+          <select _ngcontent-c32="" (change)="onChange($event.target.value)" class="form-control">
+            <option disabled>select time period</option>
+            <option _ngcontent-c32="" *ngFor="let item of timeFilter;let i=index" value="{{i}}">Past {{item.value}}{{item.unit}}</option>
           </select>
         </div>
       </div>
@@ -30,13 +22,13 @@
       <div _ngcontent-c31="" class="col-sm-6">
         <div _ngcontent-c31="" class="form-group">
           <label _ngcontent-c31="" for="inputEmail">Sender's Email Address</label>
-          <input _ngcontent-c31="" class="form-control" id="inputEmail" placeholder="Email" type="email">
+          <input _ngcontent-c31="" class="form-control" [(ngModel)]="setting.sender_emailId" placeholder="Email" type="email">
         </div>
       </div>
       <div _ngcontent-c31="" class="col-sm-6">
         <div _ngcontent-c31="" class="form-group">
           <label _ngcontent-c31="" for="inputWebsite">Sender's Email Password</label>
-          <input _ngcontent-c31="" class="form-control" id="inputWebsite" placeholder="Website" type="password">
+          <input _ngcontent-c31="" class="form-control" [(ngModel)]="setting.sender_emailPassword" placeholder="password" type="password">
         </div>
       </div>
     </div>
@@ -44,24 +36,36 @@
         <div _ngcontent-c31="" class="col-sm-6">
           <div _ngcontent-c31="" class="form-group">
             <label _ngcontent-c31="" for="inputEmail">Sender's Email Host</label>
-            <input _ngcontent-c31="" class="form-control" id="inputEmail" placeholder="Email" type="text">
+            <input _ngcontent-c31="" class="form-control" [(ngModel)]="setting.sender_emailHost" placeholder="Host" type="text">
           </div>
         </div>
         <div _ngcontent-c31="" class="col-sm-6">
           <div _ngcontent-c31="" class="form-group">
-            <label _ngcontent-c31="" for="inputWebsite">sender's Port number</label>
-            <input _ngcontent-c31="" class="form-control" id="inputWebsite" placeholder="Website" type="number">
+            <label _ngcontent-c31="" for="inputWebsite">Sender's Port number</label>
+            <input _ngcontent-c31="" class="form-control" [(ngModel)]="setting.sender_emailPort"  placeholder="port" type="number">
           </div>
         </div>
       </div>
       <div _ngcontent-c31="" class="row">
-          <div _ngcontent-c31="" class="col-sm-6">
+          <div _ngcontent-c31="" class="col-sm-4">
             <div _ngcontent-c31="" class="form-group">
               <label _ngcontent-c31="" for="inputEmail">Reciever's Email Address</label>
-              <input _ngcontent-c31="" class="form-control" id="inputEmail" placeholder="Email" type="text">
+              <input _ngcontent-c31="" class="form-control" [(ngModel)]="setting.reciever_emailId" placeholder="Email" type="text">
+            </div>
+          </div>
+          <div _ngcontent-c31="" class="col-sm-4">
+            <div _ngcontent-c31="" class="form-group">
+              <label _ngcontent-c31="" for="inputEmail">Username</label>
+              <input _ngcontent-c31="" class="form-control" [(ngModel)]="setting.username" placeholder="username" type="text">
+            </div>
+          </div>
+          <div _ngcontent-c31="" class="col-sm-4">
+            <div _ngcontent-c31="" class="form-group">
+              <label _ngcontent-c31="" for="inputEmail">Password</label>
+              <input _ngcontent-c31="" class="form-control" [(ngModel)]="setting.password" placeholder="password" type="text">
             </div>
           </div>
         </div>
-    <button _ngcontent-c31="" class="btn btn-primary" type="submit">Submit</button>
+    <button _ngcontent-c31="" class="btn btn-primary" (click)="onSubmit()">Submit</button>
   </nb-card-body>
 </nb-card>

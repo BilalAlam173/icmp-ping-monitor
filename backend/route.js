@@ -12,6 +12,8 @@ module.exports = (app)=>{
   app.post('/api/setting', settingCtrl.insert);
   // update
   app.put('/api/setting', settingCtrl.update);
+    // get
+    app.get('/api/setting', settingCtrl.get);
   /* settings */
 
   /* Connection */

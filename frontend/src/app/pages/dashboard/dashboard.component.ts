@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
   `],
 })
 export class DashboardComponent {
+  timer:any;
   settings = {
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
@@ -60,6 +61,13 @@ export class DashboardComponent {
   source: LocalDataSource = new LocalDataSource();
 
   constructor(private service: SmartTableService,private _router:Router) {
+  this.loadData();
+  this.timer=setInterval(()=>{
+  this.loadData();
+  },5000)
+  }
+
+  loadData(){
     let data;
     this.service.getData().subscribe((res) => {
       data = res;
@@ -69,6 +77,9 @@ export class DashboardComponent {
 
   onDeleteConfirm(event): void {
     if (window.confirm('Are you sure you want to delete?')) {
+      this.service.delete(event.data).subscribe((res)=>{
+
+      });
       event.confirm.resolve();
     } else {
       event.confirm.reject();
@@ -79,7 +90,9 @@ export class DashboardComponent {
   }
 
   onEditConfirm(event): void {
-    window.alert('edited');
+    this.service.edit(event.newData).subscribe((res)=>{
+
+    });
     event.confirm.resolve();
      }
 }

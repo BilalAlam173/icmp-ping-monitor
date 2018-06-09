@@ -18,4 +18,11 @@ export class SettingService {
     console.log(data);
     return this._http.post(`${this._global.url}login`,data);
   }
+
+  get(){
+    return this._http.get(`${this._global.url}setting`);
+  }
+  update(settings){
+    return this._http.put(`${this._global.url}setting`,settings);
+  }
 }

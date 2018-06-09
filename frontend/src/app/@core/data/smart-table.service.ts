@@ -8,7 +8,12 @@ export class SmartTableService {
 
 
   getData() {
-
     return this._http.get(this._global.url+'connection');
+  }
+  edit(connection){
+    return this._http.put(`${this._global.url}connection/${connection._id}`,connection);
+  }
+  delete(connection){
+    return this._http.delete(`${this._global.url}connection/${connection._id}`,connection);
   }
 }
