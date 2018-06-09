@@ -6,7 +6,7 @@ const global = require('../config/global');
 module.exports = {
 
     insert: async (req, res) => {
-        console.log("POST CONEECTION RECIEVED")
+        
 
         const existingConnection = await connetionModel.findOne({ip: req.body.ip});
         if (existingConnection) {
@@ -33,6 +33,7 @@ module.exports = {
         });
 
         pingHistory.save((err, pingHistory) => {
+            console.log("POST CONEECTION RECIEVED")
             if (err) {
                 res.status(500).json({
                     message: "something went wrong"
