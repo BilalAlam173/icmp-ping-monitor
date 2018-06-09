@@ -71,6 +71,9 @@ function processCtrl() {
 
       } else {
         latency = rcvd - sent;
+        console.log(rcvd)
+        console.log(sent)
+        console.log(latency);
         connection.status = 1;
 
       }
