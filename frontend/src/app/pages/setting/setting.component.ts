@@ -8,7 +8,7 @@ import { DetailService } from '../detail.service';
   styleUrls: ['./setting.component.scss']
 })
 export class SettingComponent implements OnInit {
-  setting={
+  setting :any={
   pingInterval:'',
   timePeriod:''
   };

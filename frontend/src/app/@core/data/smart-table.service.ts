@@ -16,4 +16,7 @@ export class SmartTableService {
   delete(connection){
     return this._http.delete(`${this._global.url}connection/${connection._id}`,connection);
   }
+  add(connection){
+    return this._http.post(`${this._global.url}connection`,connection);
+  }
 }

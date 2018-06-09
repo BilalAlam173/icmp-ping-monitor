@@ -4,8 +4,8 @@
           Connections
         </nb-card-header>
 
-        <nb-card-body>
-          <ng2-smart-table [settings]="settings" [source]="source" (userRowSelect)="onUserRowSelect($event)" (deleteConfirm)="onDeleteConfirm($event)" (editConfirm)="onEditConfirm($event)">
+        <nb-card-body *ngIf="settings">
+          <ng2-smart-table [settings]="settings" [source]="source" (userRowSelect)="onUserRowSelect($event)" (deleteConfirm)="onDeleteConfirm($event)" (createConfirm)="onAddConfirm($event)" (editConfirm)="onEditConfirm($event)">
           </ng2-smart-table>
         </nb-card-body>
       </nb-card>
