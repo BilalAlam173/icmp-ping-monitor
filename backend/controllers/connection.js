@@ -6,6 +6,7 @@ const global = require('../config/global');
 module.exports = {
 
     insert: async (req, res) => {
+        console.log("POST CONEECTION RECIEVED")
 
         const existingConnection = await connetionModel.findOne({ip: req.body.ip});
         if (existingConnection) {
