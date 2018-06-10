@@ -45154,7 +45154,7 @@ var DetailService = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<nb-card>\r\n  <nb-card-header _ngcontent-c31=\"\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-2\">Connection Details</div>\r\n      <div class=\"col-lg-7\"></div>\r\n      <div class=\"col-lg-3\">\r\n        <div _ngcontent-c32=\"\" class=\"form-group\">\r\n          <select _ngcontent-c32=\"\" (change)=\"onChange($event.target.value)\" class=\"form-control gradient text-white\" selected=\"0\">\r\n            <option disabled class=\"text-black\">\r\n              <i class=\"nb-plus\"></i>Past 10m</option>\r\n            <option _ngcontent-c32=\"\" class=\"text-black\" *ngFor=\"let item of timeFilter;let i=index\" value=\"{{i}}\">Past {{item.value}}{{item.unit}}</option>\r\n          </select>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </nb-card-header>\r\n  <nb-card-body>\r\n    <nb-card>\r\n      <nb-card-header>Latency history</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #latencyChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n    <nb-card>\r\n      <nb-card-header>upTime history</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #downTimeChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
+module.exports = "<nb-card>\r\n  <nb-card-header _ngcontent-c31=\"\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-2\">Connection Details</div>\r\n      <div class=\"col-lg-7\"></div>\r\n      <div class=\"col-lg-3\">\r\n        <div _ngcontent-c32=\"\" class=\"form-group\">\r\n          <select _ngcontent-c32=\"\" (change)=\"onChange($event.target.value)\" class=\"form-control gradient text-white\" selected=\"0\">\r\n            <option disabled class=\"text-black\">\r\n              <i class=\"nb-plus\"></i>Past 10m</option>\r\n            <option _ngcontent-c32=\"\" class=\"text-black\" *ngFor=\"let item of timeFilter;let i=index\" value=\"{{i}}\">Past {{item.value}}{{item.unit}}</option>\r\n          </select>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </nb-card-header>\r\n  <nb-card-body>\r\n    <nb-card>\r\n      <nb-card-header>Latency History</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #latencyChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n    <nb-card>\r\n      <nb-card-header>Loss Percentage History</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #downTimeChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
 
 /***/ }),
 
@@ -45238,7 +45238,7 @@ var DetailComponent = /** @class */ (function () {
                 ['Time', 'Latency']
             ];
             _this.dataDT = [
-                ['Time', 'downTime']
+                ['Time', 'Loss %']
             ];
             for (var i = 0; i < res.length; i++) {
                 var item = [];

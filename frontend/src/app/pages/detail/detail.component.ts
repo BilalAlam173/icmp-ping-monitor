@@ -55,7 +55,7 @@ export class DetailComponent implements AfterViewInit,OnDestroy {
         ['Time', 'Latency']
       ];
       this.dataDT = [
-        ['Time', 'downTime']
+        ['Time', 'Loss %']
       ];
       for(var i=0;i<res.length;i++){
         let item = [];
