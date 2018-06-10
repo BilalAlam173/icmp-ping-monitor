@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter,OnDestroy } from '@angular/core';
 import { LocalDataSource, ViewCell } from 'ng2-smart-table';
 import { SmartTableService } from './../../@core/data/smart-table.service';
 import { Router } from '@angular/router';

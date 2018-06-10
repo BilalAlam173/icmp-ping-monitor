@@ -44721,11 +44721,12 @@ module.exports = "<div class=\"row\">\r\n    <nb-card>\r\n        <nb-card-heade
 /*!********************************************************!*\
   !*** ./src/app/pages/dashboard/dashboard.component.ts ***!
   \********************************************************/
-/*! exports provided: DashboardComponent */
+/*! exports provided: StatusRenderComponent, DashboardComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StatusRenderComponent", function() { return StatusRenderComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DashboardComponent", function() { return DashboardComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var ng2_smart_table__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ng2-smart-table */ "../node_modules/ng2-smart-table/index.js");
@@ -44733,6 +44734,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _core_utils_util_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../@core/utils/util.service */ "./src/app/@core/utils/util.service.ts");
 /* harmony import */ var _setting_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../setting.service */ "./src/app/setting.service.ts");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -44783,6 +44785,32 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
+
+var StatusRenderComponent = /** @class */ (function () {
+    function StatusRenderComponent() {
+        this.save = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+    }
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"])(),
+        __metadata("design:type", Object)
+    ], StatusRenderComponent.prototype, "value", void 0);
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"])(),
+        __metadata("design:type", Object)
+    ], StatusRenderComponent.prototype, "rowData", void 0);
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Output"])(),
+        __metadata("design:type", _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"])
+    ], StatusRenderComponent.prototype, "save", void 0);
+    StatusRenderComponent = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
+            template: "\n      <h6 class=\"{{value}}\"><b>{{value}}</b></h6>\n  ",
+            styles: ["\n    .online{\n      color:green\n    }\n    .offline{\n      color:red;\n    }\n  "],
+        })
+    ], StatusRenderComponent);
+    return StatusRenderComponent;
+}());
+
 var DashboardComponent = /** @class */ (function () {
     function DashboardComponent(service, _settingService, _router, _util) {
         var _this = this;
@@ -44799,10 +44827,12 @@ var DashboardComponent = /** @class */ (function () {
     }
     DashboardComponent.prototype.loadData = function () {
         var _this = this;
-        var data;
         this.service.getData().subscribe(function (res) {
-            data = res;
-            _this.source.load(data);
+            res = res.map(function (x) {
+                x.status = x.status > 0 ? 'online' : 'offline';
+                return x;
+            });
+            _this.source.load(res);
         });
     };
     DashboardComponent.prototype.applySettings = function () {
@@ -44845,9 +44875,10 @@ var DashboardComponent = /** @class */ (function () {
                                     },
                                     status: {
                                         title: 'Status',
-                                        type: 'string',
+                                        type: 'custom',
                                         editable: false,
                                         addable: false,
+                                        renderComponent: StatusRenderComponent,
                                     },
                                     averagedLatency: {
                                         title: 'Latency(ms)',
@@ -44881,18 +44912,8 @@ var DashboardComponent = /** @class */ (function () {
                                             },
                                         },
                                     },
-                                    statusThreshold_pings: {
-                                        title: 'ST(time)',
-                                        editor: {
-                                            type: 'list',
-                                            config: {
-                                                list: timeOptions,
-                                            },
-                                        },
-                                        type: 'string',
-                                    },
                                     downTimePercentThreshold_Value: {
-                                        title: 'Loss(%)',
+                                        title: 'Loss Th(%)',
                                         type: 'string',
                                     },
                                     downTimePercentThreshold_pings: {
@@ -44904,6 +44925,16 @@ var DashboardComponent = /** @class */ (function () {
                                                 list: timeOptions,
                                             },
                                         },
+                                    },
+                                    statusThreshold_pings: {
+                                        title: 'ST(time)',
+                                        editor: {
+                                            type: 'list',
+                                            config: {
+                                                list: timeOptions,
+                                            },
+                                        },
+                                        type: 'string',
                                     },
                                 },
                             };
@@ -45037,35 +45068,45 @@ var DetailService = /** @class */ (function () {
         this.timeFilter = [
             {
                 value: '1',
-                unit: 'm'
+                unit: 'm',
+                seconds: 60,
             }, {
                 value: '10',
-                unit: 'm'
+                unit: 'm',
+                seconds: 60 * 10,
             },
             {
                 value: '30',
-                unit: 'm'
+                unit: 'm',
+                seconds: 60 * 30,
             }, {
                 value: '1',
-                unit: 'h'
+                unit: 'h',
+                seconds: 60 * 60,
             }, {
                 value: '3',
-                unit: 'h'
+                unit: 'h',
+                seconds: 60 * 60 * 3,
             }, {
                 value: '6',
-                unit: 'h'
+                unit: 'h',
+                seconds: 60 * 60 * 6,
             }, {
                 value: '12',
-                unit: 'h'
+                unit: 'h',
+                seconds: 60 * 60 * 12,
             }, {
                 value: '1',
-                unit: 'd'
+                unit: 'd',
+                seconds: 60 * 60 * 24,
             }, {
                 value: '7',
-                unit: 'd'
+                unit: 'd',
+                seconds: 60 * 60 * 24 * 7,
             }, {
                 value: '1',
-                unit: 'mo'
+                unit: 'mo',
+                seconds: 60 * 60 * 24 * 30,
             },
         ];
     }
@@ -45113,7 +45154,7 @@ var DetailService = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<nb-card>\r\n  <nb-card-header  _ngcontent-c31=\"\">Connection history</nb-card-header>\r\n  <nb-card-body >\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-3\">\r\n        <div _ngcontent-c32=\"\" class=\"form-group\">\r\n          <label _ngcontent-c32=\"\">Filter by time</label>\r\n          <select _ngcontent-c32=\"\" (change)=\"onChange($event.target.value)\" class=\"form-control\">\r\n            <option disabled>select time period</option>\r\n            <option _ngcontent-c32=\"\" *ngFor=\"let item of timeFilter;let i=index\" value=\"{{i}}\">Past {{item.value}}{{item.unit}}</option>\r\n          </select>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-12\">\r\n        <div #myChart class=\"chart\"></div>\r\n      </div>\r\n    </div>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
+module.exports = "<nb-card>\r\n  <nb-card-header _ngcontent-c31=\"\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-2\">Connection Details</div>\r\n      <div class=\"col-lg-7\"></div>\r\n      <div class=\"col-lg-3\">\r\n        <div _ngcontent-c32=\"\" class=\"form-group\">\r\n          <select _ngcontent-c32=\"\" (change)=\"onChange($event.target.value)\" class=\"form-control gradient text-white\" selected=\"0\">\r\n            <option disabled class=\"text-black\">\r\n              <i class=\"nb-plus\"></i>Past 10m</option>\r\n            <option _ngcontent-c32=\"\" class=\"text-black\" *ngFor=\"let item of timeFilter;let i=index\" value=\"{{i}}\">Past {{item.value}}{{item.unit}}</option>\r\n          </select>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </nb-card-header>\r\n  <nb-card-body>\r\n    <nb-card>\r\n      <nb-card-header>Latency history</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #latencyChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n    <nb-card>\r\n      <nb-card-header>upTime history</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #downTimeChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
 
 /***/ }),
 
@@ -45124,7 +45165,7 @@ module.exports = "<nb-card>\r\n  <nb-card-header  _ngcontent-c31=\"\">Connection
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".chart {\n  border: solid 2px #1DE9B6;\n  border-radius: 5px 5px 5px 5px;\n  height: 500px; }\n"
+module.exports = ".chart {\n  height: 500px; }\n\n.text-white {\n  color: white; }\n\n.text-black {\n  color: black; }\n\n.gradient {\n  border: solid linear-gradient(to right, #40dcb2, #40dc7e);\n  background-image: linear-gradient(to right, #40dcb2, #40dc7e); }\n"
 
 /***/ }),
 
@@ -45160,6 +45201,9 @@ var DetailComponent = /** @class */ (function () {
         this.data = [
             ['Time', 'Latency']
         ];
+        this.dataDT = [
+            ['Time', 'downTime']
+        ];
         this.timeFilter = [];
         this.options = {
             "filters": [
@@ -45193,12 +45237,19 @@ var DetailComponent = /** @class */ (function () {
             _this.data = [
                 ['Time', 'Latency']
             ];
+            _this.dataDT = [
+                ['Time', 'downTime']
+            ];
             for (var i = 0; i < res.length; i++) {
                 var item = [];
+                var itemDT = [];
                 item.push(String(i));
-                var value = res[i][Object.keys(res[i])[0]];
-                item.push(value);
+                itemDT.push(String(i));
+                var value = String(res[i][Object.keys(res[i])[0]]).split('-');
+                item.push(Number(value[0]));
+                itemDT.push(Number(value[1]));
                 _this.data.push(item);
+                _this.dataDT.push(itemDT);
             }
             _this.drawChart();
         }, function (err) {
@@ -45207,13 +45258,21 @@ var DetailComponent = /** @class */ (function () {
     };
     DetailComponent.prototype.drawChart = function () {
         var data = google.visualization.arrayToDataTable(this.data);
+        var dataDT = google.visualization.arrayToDataTable(this.dataDT);
         var options = {
             title: 'Latency',
             curveType: 'function',
             legend: { position: 'bottom' }
         };
-        var chart = new google.visualization.LineChart(this.myChart.nativeElement);
+        var optionsDT = {
+            title: 'Loss Percentage',
+            curveType: 'none',
+            legend: { position: 'bottom' }
+        };
+        var chart = new google.visualization.LineChart(this.latencyChart.nativeElement);
+        var chartDT = new google.visualization.LineChart(this.Chart.nativeElement);
         chart.draw(data, options);
+        chartDT.draw(dataDT, optionsDT);
     };
     DetailComponent.prototype.onChange = function (value) {
         var obj = this.timeFilter[value];
@@ -45230,9 +45289,13 @@ var DetailComponent = /** @class */ (function () {
         clearInterval(this.timer);
     };
     __decorate([
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"])('myChart'),
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"])('latencyChart'),
         __metadata("design:type", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"])
-    ], DetailComponent.prototype, "myChart", void 0);
+    ], DetailComponent.prototype, "latencyChart", void 0);
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"])('downTimeChart'),
+        __metadata("design:type", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"])
+    ], DetailComponent.prototype, "Chart", void 0);
     DetailComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'detail',
@@ -45592,12 +45655,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _miscellaneous_miscellaneous_module__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./miscellaneous/miscellaneous.module */ "./src/app/pages/miscellaneous/miscellaneous.module.ts");
 /* harmony import */ var _setting_setting_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./setting/setting.component */ "./src/app/pages/setting/setting.component.ts");
 /* harmony import */ var _detail_detail_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./detail/detail.component */ "./src/app/pages/detail/detail.component.ts");
+/* harmony import */ var _dashboard_dashboard_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./dashboard/dashboard.component */ "./src/app/pages/dashboard/dashboard.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -45622,8 +45687,10 @@ var PagesModule = /** @class */ (function () {
             ],
             declarations: PAGES_COMPONENTS.concat([
                 _setting_setting_component__WEBPACK_IMPORTED_MODULE_6__["SettingComponent"],
-                _detail_detail_component__WEBPACK_IMPORTED_MODULE_7__["DetailComponent"]
+                _detail_detail_component__WEBPACK_IMPORTED_MODULE_7__["DetailComponent"],
+                _dashboard_dashboard_component__WEBPACK_IMPORTED_MODULE_8__["StatusRenderComponent"]
             ]),
+            entryComponents: [_dashboard_dashboard_component__WEBPACK_IMPORTED_MODULE_8__["StatusRenderComponent"]]
         })
     ], PagesModule);
     return PagesModule;
@@ -45640,7 +45707,7 @@ var PagesModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<nb-card _ngcontent-c31=\"\" _nghost-c23=\"\">\r\n  <nb-card-header _ngcontent-c31=\"\">Settings</nb-card-header>\r\n  <nb-card-body _ngcontent-c31=\"\">\r\n    <div _ngcontent-c31=\"\" class=\"row\">\r\n      <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n        <div _ngcontent-c31=\"\" class=\"form-group\">\r\n          <label _ngcontent-c31=\"\" for=\"inputFirstName\">Ping Interval(s)</label>\r\n          <input _ngcontent-c31=\"\" class=\"form-control\" id=\"pingInterval\" [(ngModel)]=\"setting.pingInterval\" placeholder=\"Ping Interval in seconds\" type=\"number\">\r\n        </div>\r\n      </div>\r\n      <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n        <div _ngcontent-c32=\"\" class=\"form-group\">\r\n          <label _ngcontent-c32=\"\">Time period (for averaged calculation)</label>\r\n          <select _ngcontent-c32=\"\" (change)=\"onChange($event.target.value)\" class=\"form-control\">\r\n            <option disabled>select time period</option>\r\n            <option _ngcontent-c32=\"\" *ngFor=\"let item of timeFilter;let i=index\" value=\"{{i}}\">Past {{item.value}}{{item.unit}}</option>\r\n          </select>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div _ngcontent-c31=\"\" class=\"row\">\r\n      <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n        <div _ngcontent-c31=\"\" class=\"form-group\">\r\n          <label _ngcontent-c31=\"\" for=\"inputEmail\">Sender's Email Address</label>\r\n          <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.sender_emailId\" placeholder=\"Email\" type=\"email\">\r\n        </div>\r\n      </div>\r\n      <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n        <div _ngcontent-c31=\"\" class=\"form-group\">\r\n          <label _ngcontent-c31=\"\" for=\"inputWebsite\">Sender's Email Password</label>\r\n          <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.sender_emailPassword\" placeholder=\"password\" type=\"password\">\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div _ngcontent-c31=\"\" class=\"row\">\r\n        <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n          <div _ngcontent-c31=\"\" class=\"form-group\">\r\n            <label _ngcontent-c31=\"\" for=\"inputEmail\">Sender's Email Host</label>\r\n            <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.sender_emailHost\" placeholder=\"Host\" type=\"text\">\r\n          </div>\r\n        </div>\r\n        <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n          <div _ngcontent-c31=\"\" class=\"form-group\">\r\n            <label _ngcontent-c31=\"\" for=\"inputWebsite\">Sender's Port number</label>\r\n            <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.sender_emailPort\"  placeholder=\"port\" type=\"number\">\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div _ngcontent-c31=\"\" class=\"row\">\r\n          <div _ngcontent-c31=\"\" class=\"col-sm-4\">\r\n            <div _ngcontent-c31=\"\" class=\"form-group\">\r\n              <label _ngcontent-c31=\"\" for=\"inputEmail\">Reciever's Email Address</label>\r\n              <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.reciever_emailId\" placeholder=\"Email\" type=\"text\">\r\n            </div>\r\n          </div>\r\n          <div _ngcontent-c31=\"\" class=\"col-sm-4\">\r\n            <div _ngcontent-c31=\"\" class=\"form-group\">\r\n              <label _ngcontent-c31=\"\" for=\"inputEmail\">Username</label>\r\n              <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.username\" placeholder=\"username\" type=\"text\">\r\n            </div>\r\n          </div>\r\n          <div _ngcontent-c31=\"\" class=\"col-sm-4\">\r\n            <div _ngcontent-c31=\"\" class=\"form-group\">\r\n              <label _ngcontent-c31=\"\" for=\"inputEmail\">Password</label>\r\n              <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.password\" placeholder=\"password\" type=\"text\">\r\n            </div>\r\n          </div>\r\n        </div>\r\n    <button _ngcontent-c31=\"\" class=\"btn btn-primary\" (click)=\"onSubmit()\">Submit</button>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
+module.exports = "<nb-card _ngcontent-c31=\"\" _nghost-c23=\"\">\r\n  <nb-card-header _ngcontent-c31=\"\">Settings</nb-card-header>\r\n  <nb-card-body _ngcontent-c31=\"\">\r\n    <div _ngcontent-c31=\"\" class=\"row\">\r\n      <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n        <div _ngcontent-c31=\"\" class=\"form-group\">\r\n          <label _ngcontent-c31=\"\" for=\"inputFirstName\">Ping Interval(s)</label>\r\n          <input _ngcontent-c31=\"\" class=\"form-control\" id=\"pingInterval\" [(ngModel)]=\"setting.pingInterval\" placeholder=\"Ping Interval in seconds\" type=\"number\">\r\n        </div>\r\n      </div>\r\n      <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n        <div _ngcontent-c32=\"\" class=\"form-group\">\r\n          <label _ngcontent-c32=\"\">Time period (for averaged calculation)</label>\r\n          <select _ngcontent-c32=\"\" (change)=\"onChange($event)\" [(ngModel)]=\"selectedTimePeriod\" class=\"form-control\">\r\n            <option disabled>select time period</option>\r\n            <option _ngcontent-c32=\"\" *ngFor=\"let item of timeFilter;let i=index\" value=\"{{i}}\">Past {{item.value}}{{item.unit}}</option>\r\n          </select>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div _ngcontent-c31=\"\" class=\"row\">\r\n      <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n        <div _ngcontent-c31=\"\" class=\"form-group\">\r\n          <label _ngcontent-c31=\"\" for=\"inputEmail\">Sender's Email Address</label>\r\n          <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.sender_emailId\" placeholder=\"Email\" type=\"email\">\r\n        </div>\r\n      </div>\r\n      <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n        <div _ngcontent-c31=\"\" class=\"form-group\">\r\n          <label _ngcontent-c31=\"\" for=\"inputWebsite\">Sender's Email Password</label>\r\n          <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.sender_emailPassword\" placeholder=\"password\" type=\"password\">\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div _ngcontent-c31=\"\" class=\"row\">\r\n        <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n          <div _ngcontent-c31=\"\" class=\"form-group\">\r\n            <label _ngcontent-c31=\"\" for=\"inputEmail\">Sender's Email Host</label>\r\n            <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.sender_emailHost\" placeholder=\"Host\" type=\"text\">\r\n          </div>\r\n        </div>\r\n        <div _ngcontent-c31=\"\" class=\"col-sm-6\">\r\n          <div _ngcontent-c31=\"\" class=\"form-group\">\r\n            <label _ngcontent-c31=\"\" for=\"inputWebsite\">Sender's Port number</label>\r\n            <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.sender_emailPort\"  placeholder=\"port\" type=\"number\">\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div _ngcontent-c31=\"\" class=\"row\">\r\n          <div _ngcontent-c31=\"\" class=\"col-sm-4\">\r\n            <div _ngcontent-c31=\"\" class=\"form-group\">\r\n              <label _ngcontent-c31=\"\" for=\"inputEmail\">Reciever's Email Address</label>\r\n              <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.reciever_emailId\" placeholder=\"Email\" type=\"text\">\r\n            </div>\r\n          </div>\r\n          <div _ngcontent-c31=\"\" class=\"col-sm-4\">\r\n            <div _ngcontent-c31=\"\" class=\"form-group\">\r\n              <label _ngcontent-c31=\"\" for=\"inputEmail\">Username</label>\r\n              <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.username\" placeholder=\"username\" type=\"text\">\r\n            </div>\r\n          </div>\r\n          <div _ngcontent-c31=\"\" class=\"col-sm-4\">\r\n            <div _ngcontent-c31=\"\" class=\"form-group\">\r\n              <label _ngcontent-c31=\"\" for=\"inputEmail\">Password</label>\r\n              <input _ngcontent-c31=\"\" class=\"form-control\" [(ngModel)]=\"setting.password\" placeholder=\"password\" type=\"text\">\r\n            </div>\r\n          </div>\r\n        </div>\r\n    <button _ngcontent-c31=\"\" class=\"btn btn-primary\" (click)=\"onSubmit()\">Submit</button>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
 
 /***/ }),
 
@@ -45677,6 +45744,41 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 
 
 
@@ -45695,17 +45797,37 @@ var SettingComponent = /** @class */ (function () {
         this._settingService.get().subscribe(function (res) {
             _this.setting = res;
             _this.timeFilter = _this._detailService.timeFilter;
+            console.log(_this.timeFilter);
+            _this.selectedTimePeriod = _this.timeFilter.findIndex(function (x) {
+                console.log(x.seconds + "--" + (res.timePeriod * res.pingInterval));
+                return x.seconds == (res.timePeriod * res.pingInterval);
+            });
         });
     };
     SettingComponent.prototype.onChange = function (time) {
-        time = this._detailService.toPings(time.value, time.filter, this.setting.pingInterval);
-        if (time) {
-            this.setting.timePeriod = time;
-        }
+        return __awaiter(this, void 0, void 0, function () {
+            var timeObj;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        timeObj = this.timeFilter[Number(time.target.value)];
+                        return [4 /*yield*/, this._detailService.toPings(timeObj.value, timeObj.unit, this.setting.pingInterval)];
+                    case 1:
+                        time = _a.sent();
+                        if (time) {
+                            this.setting.timePeriod = time;
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     SettingComponent.prototype.onSubmit = function () {
+        var _this = this;
         this._settingService.update(this.setting).subscribe(function (res) {
-            window.alert(res);
+            _this._settingService.update(_this.setting).subscribe(function (res) {
+                console.log(res);
+            });
         });
     };
     SettingComponent = __decorate([

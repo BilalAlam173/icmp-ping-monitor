@@ -11,6 +11,7 @@ declare var google: any;
 export class DetailComponent implements AfterViewInit {
   @ViewChild('latencyChart') latencyChart: ElementRef;
   @ViewChild('downTimeChart') Chart: ElementRef;
+  timer:any;
   data = [
     ['Time', 'Latency']
   ];
