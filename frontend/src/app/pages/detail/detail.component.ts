@@ -8,7 +8,7 @@ declare var google: any;
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss']
 })
-export class DetailComponent implements AfterViewInit {
+export class DetailComponent implements AfterViewInit,OnDestroy {
   @ViewChild('latencyChart') latencyChart: ElementRef;
   @ViewChild('downTimeChart') Chart: ElementRef;
   timer:any;
