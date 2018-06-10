@@ -80,7 +80,7 @@ module.exports = {
             return res
             .status(500)
             .send({
-                error: "unsuccessful"
+                error: "Invalid ID in request paramaters"
             })
         }
         connetionModel.findByIdAndUpdate(req.params.id, req.body, (err, connection) => {
@@ -88,7 +88,7 @@ module.exports = {
                 return res
                     .status(500)
                     .send({
-                        error: "unsuccessful"
+                        error: "something went wrong"
                     })
             }else{
                 res.send({
