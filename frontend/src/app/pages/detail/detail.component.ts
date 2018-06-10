@@ -9,7 +9,8 @@ declare var google: any;
   styleUrls: ['./detail.component.scss']
 })
 export class DetailComponent implements AfterViewInit {
-  @ViewChild('myChart') myChart: ElementRef;
+  @ViewChild('latencyChart') latencyChart: ElementRef;
+  @ViewChild('downTimeChart') Chart: ElementRef;
   data = [
     ['Time', 'Latency']
   ];
@@ -71,7 +72,7 @@ export class DetailComponent implements AfterViewInit {
       legend: { position: 'bottom' }
     };
 
-    var chart = new google.visualization.LineChart(this.myChart.nativeElement);
+    var chart = new google.visualization.LineChart(this.latencyChart.nativeElement);
 
     chart.draw(data, options);
   }

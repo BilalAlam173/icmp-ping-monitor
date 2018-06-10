@@ -1,21 +1,47 @@
-<nb-card>
-  <nb-card-header  _ngcontent-c31="">Connection history</nb-card-header>
-  <nb-card-body >
-    <div class="row">
-      <div class="col-lg-3">
-        <div _ngcontent-c32="" class="form-group">
-          <label _ngcontent-c32="">Filter by time</label>
-          <select _ngcontent-c32="" (change)="onChange($event.target.value)" class="form-control">
-            <option disabled>select time period</option>
-            <option _ngcontent-c32="" *ngFor="let item of timeFilter;let i=index" value="{{i}}">Past {{item.value}}{{item.unit}}</option>
-          </select>
+<nb-card class="container">
+  <nb-card-header _ngcontent-c31="">Connection Details</nb-card-header>
+  <nb-card-body>
+    <nb-card>
+      <nb-card-header>Latency history</nb-card-header>
+      <nb-card-body>
+        <div class="row">
+          <div class="col-lg-3">
+            <div _ngcontent-c32="" class="form-group">
+              <label _ngcontent-c32="">Filter by time</label>
+              <select _ngcontent-c32="" (change)="onChange($event.target.value)" class="form-control">
+                <option disabled>select time period</option>
+                <option _ngcontent-c32="" *ngFor="let item of timeFilter;let i=index" value="{{i}}">Past {{item.value}}{{item.unit}}</option>
+              </select>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <div #myChart class="chart"></div>
-      </div>
-    </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div #latencyChart class="chart"></div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+    <nb-card class="container">
+        <nb-card-header>upTime history</nb-card-header>
+        <nb-card-body>
+          <div class="row">
+            <div class="col-lg-3">
+              <div _ngcontent-c32="" class="form-group">
+                <label _ngcontent-c32="">Filter by time</label>
+                <select _ngcontent-c32="" (change)="onChange($event.target.value)" class="form-control">
+                  <option disabled>select time period</option>
+                  <option _ngcontent-c32="" *ngFor="let item of timeFilter;let i=index" value="{{i}}">Past {{item.value}}{{item.unit}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div #downTimeChart class="chart"></div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
   </nb-card-body>
 </nb-card>
