@@ -15,7 +15,8 @@ function processCtrl() {
     connectionModel: require('../models/connection'),
     pingHistoryModel: require('../models/pingHistory'),
     settingModel: require('../models/setting'),
-    global: require('../config/global'),
+    global:{},
+    globalFlags: require('../config/global'),
     helperFns: require('../config/helper-fns'),
     timer: {},
     pingInterval: 5,
@@ -27,12 +28,14 @@ function processCtrl() {
     loop: _loop,
     sendAlert: _sendAlert,
     sendPing: _sendPing,
+    getLatestAvgLatency:_getLatestAvgLatency
 
   }
 
   //constructor function
-  function init() {
-    _module.pingsPerHour = (60 * 60) / _module.global.pingInterval;
+  async function init() {
+    _module.global = await _module.settingModel.find({});
+    _module.pingsPerHour = (60 * 60) / _module.global[0].pingInterval;
     _module.netPingSession = _module.netPing.createSession();
     _module.timer = setInterval(_module.loop, _module.pingInterval * 1000);
   }
@@ -52,10 +55,33 @@ function processCtrl() {
     if (_module.connections.length > 0) {
       //ping each connection
       for (var i = 0; i < _module.connections.length; i++) {
+        if(!_module.pingIntervalChanged){
         _module.sendPing(_module.connections[i]);
+        }else{
+          _module.pingIntervalChanged=false;
+          clearInterval(_module.timer);
+          init();
+        }
       }
     }
   }
+
+  async function _getLatestAvgLatency(connection){
+    const setting = await _module.settingModel.find({});
+    const time= setting[0].timePeriod*setting[0].pingInterval;
+
+    const pingHistory = await _module.pingHistoryCtrl.getSimple(connection,time);
+    const n =pingHistory.length;
+    const reducer =(averagedLatency,item)=>{
+      for(var key in item){
+        return Number(averagedLatency) + Number(item[key].split('-')[0]);
+      }
+    }
+    const sum = pingHistory.reduce(reducer,0);
+    connection.averagedLatency=Math.floor(sum/n);
+    return connection;
+  }
+
   async function _sendPing(connection) {
     let currentTimeStamp = new Date();
 
@@ -77,6 +103,21 @@ function processCtrl() {
         connection.status = 1;
 
       }
+      let settings = await _module.settingModel.find({});
+      global = settings[0];
+      if(_module.globalFlags.timePeriodChanged){
+        _module.globalFlags.timePeriodChanged=false;
+        connection = await _module.getLatestAvgLatency(connection); 
+      }
+      let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
+
+      connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
+
+      let upTime = connection.upTimePercent / 100;
+      connection.upTimePercent = Math.floor(upTime + ((connection.status<=0?0:1 - upTime) / n)) * 100;
+
+      connection.downTimePercent = 100 - connection.upTimePercent;
+
       if (!connection.pingsPerHour || global.pingIntervalChanged) {
         let newHour = {
           timestamp_hour: currentTimeStamp,
@@ -87,20 +128,10 @@ function processCtrl() {
         connection.pingHistory.hourlyHistory.push(newHour);
       } else {
         let l = connection.pingHistory.hourlyHistory.length - 1
-        connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`] = latency;
+        connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`] = latency+'-'+connection.downTimePercent;
         connection.pingHistory.markModified('hourlyHistory');
 
       }
-      let settings = await _module.settingModel.find({});
-      global = settings[0];
-      let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
-
-      connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
-
-      let upTime = connection.upTimePercent / 100;
-      connection.upTimePercent = Math.floor(upTime + ((connection.status<=0?0:1 - upTime) / n)) * 100;
-
-      connection.downTimePercent = 100 - connection.upTimePercent;
 
       connection = await _module.sendAlert(connection, global);
 

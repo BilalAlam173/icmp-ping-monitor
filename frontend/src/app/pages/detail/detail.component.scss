@@ -1,5 +1,13 @@
-.chart{
-  border:solid 2px #1DE9B6;
-  border-radius:5px 5px 5px 5px;
+.chart {
   height: 500px;
+}
+.text-white{
+  color:white;
+}
+.text-black{
+  color:black;
+}
+.gradient {
+  border:solid linear-gradient(to right, #40dcb2, #40dc7e);
+  background-image: linear-gradient(to right, #40dcb2, #40dc7e);
 }

@@ -97,16 +97,25 @@ module.exports = {
             }
         });
     },
-    delete: (req, res) => {
-        connetionModel.remove({
-            _id: req.params.id
-        }, function (err) {
-            if (!err) {
-                global.isNewConnectionAdded = true;
-                res.send({id:req.params.id});
-            } else {
+    delete: async (req, res) => {
+        const connection = await connetionModel.findOne({_id:req.params.id});
+        pingHistoryModel.remove({_id:connection.pingHistory},function(err){
+            if(err){
                 res.sendStatus(500);
+            }else{
+                connetionModel.remove({
+                    _id: req.params.id
+                }, function (err) {
+                    if (!err) {
+                        global.isNewConnectionAdded = true;
+                        res.send({id:req.params.id});
+                    } else {
+                        res.sendStatus(500);
+                    }
+                });
             }
+
         });
+        
     }
 }

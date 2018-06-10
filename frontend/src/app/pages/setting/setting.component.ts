@@ -13,6 +13,7 @@ export class SettingComponent implements OnInit {
   timePeriod:''
   };
   timeFilter=[];
+  selectedTimePeriod:any;
 
   constructor(private _settingService:SettingService,private _detailService:DetailService) { }
 
@@ -20,12 +21,18 @@ export class SettingComponent implements OnInit {
     this._settingService.get().subscribe((res:any)=>{
     this.setting=res;
     this.timeFilter=this._detailService.timeFilter;
+    console.log(this.timeFilter);
+    this.selectedTimePeriod=this.timeFilter.findIndex(x=>{
+      console.log(x.seconds+"--"+(res.timePeriod*res.pingInterval));
+      return x.seconds==(res.timePeriod*res.pingInterval)
+    });
 
     });
   }
 
-  onChange(time){
-    time = this._detailService.toPings(time.value,time.filter,this.setting.pingInterval);
+  async onChange(time){
+    let timeObj = this.timeFilter[Number(time.target.value)];
+    time = await this._detailService.toPings(timeObj.value,timeObj.unit,this.setting.pingInterval);
     if(time){
       this.setting.timePeriod=time;
     }
@@ -34,7 +41,9 @@ export class SettingComponent implements OnInit {
 
   onSubmit(){
     this._settingService.update(this.setting).subscribe((res)=>{
-      window.alert(res);
+      this._settingService.update(this.setting).subscribe(res=>{
+        console.log(res);
+      });
     })
   }
 

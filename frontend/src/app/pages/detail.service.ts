@@ -11,35 +11,45 @@ export class DetailService {
   timeFilter = [
     {
       value: '1',
-      unit: 'm'
+      unit: 'm',
+      seconds:60,
     }, {
       value: '10',
-      unit: 'm'
+      unit: 'm',
+      seconds:60*10,
     },
     {
       value: '30',
-      unit: 'm'
+      unit: 'm',
+      seconds:60*30,
     }, {
       value: '1',
-      unit: 'h'
+      unit: 'h',
+      seconds:60*60,
     }, {
       value: '3',
-      unit: 'h'
+      unit: 'h',
+      seconds:60*60*3,
     }, {
       value: '6',
-      unit: 'h'
+      unit: 'h',
+      seconds:60*60*6,
     }, {
       value: '12',
-      unit: 'h'
+      unit: 'h',
+      seconds:60*60*12,
     }, {
       value: '1',
-      unit: 'd'
+      unit: 'd',
+      seconds:60*60*24,
     }, {
       value: '7',
-      unit: 'd'
+      unit: 'd',
+      seconds:60*60*24*7,
     }, {
       value: '1',
-      unit: 'mo'
+      unit: 'mo',
+      seconds:60*60*24*30,
     },
   ]
 
