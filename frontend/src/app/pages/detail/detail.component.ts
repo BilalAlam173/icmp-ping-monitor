@@ -8,8 +8,9 @@ declare var google: any;
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss']
 })
-export class DetailComponent implements AfterViewInit {
+export class DetailComponent implements AfterViewInit,OnDestroy {
   @ViewChild('myChart') myChart: ElementRef;
+  timer:any;
   data = [
     ['Time', 'Latency']
   ];
@@ -36,7 +37,7 @@ export class DetailComponent implements AfterViewInit {
 
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(()=>{this.drawChart()});
-      setInterval(()=>{
+      this.timer=setInterval(()=>{
         this.getData(res);
 
       },5000);
@@ -86,6 +87,10 @@ export class DetailComponent implements AfterViewInit {
       }];
 
       this.loadChart();
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.timer);
   }
 
 }

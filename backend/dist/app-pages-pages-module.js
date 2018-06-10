@@ -44937,6 +44937,9 @@ var DashboardComponent = /** @class */ (function () {
         });
         event.confirm.resolve();
     };
+    DashboardComponent.prototype.ngOnDestroy = function () {
+        clearInterval(this.timer);
+    };
     DashboardComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'ngx-dashboard',
@@ -45178,7 +45181,7 @@ var DetailComponent = /** @class */ (function () {
             _this.getData(res);
             google.charts.load('current', { 'packages': ['corechart'] });
             google.charts.setOnLoadCallback(function () { _this.drawChart(); });
-            setInterval(function () {
+            _this.timer = setInterval(function () {
                 _this.getData(res);
             }, 5000);
         });
@@ -45222,6 +45225,9 @@ var DetailComponent = /** @class */ (function () {
             }
         ];
         this.loadChart();
+    };
+    DetailComponent.prototype.ngOnDestroy = function () {
+        clearInterval(this.timer);
     };
     __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"])('myChart'),

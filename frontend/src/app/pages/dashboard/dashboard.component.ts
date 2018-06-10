@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { SmartTableService } from './../../@core/data/smart-table.service';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ import { SettingService } from '../../setting.service';
     }
   `],
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnDestroy{
   timer: any;
   settings:any;
   source: LocalDataSource = new LocalDataSource();
@@ -159,5 +159,9 @@ export class DashboardComponent {
 
     });
     event.confirm.resolve();
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.timer);
   }
 }
