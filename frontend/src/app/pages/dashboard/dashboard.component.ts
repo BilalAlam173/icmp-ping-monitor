@@ -1,9 +1,34 @@
-import { Component } from '@angular/core';
-import { LocalDataSource } from 'ng2-smart-table';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { LocalDataSource, ViewCell } from 'ng2-smart-table';
 import { SmartTableService } from './../../@core/data/smart-table.service';
 import { Router } from '@angular/router';
 import { UtilService } from '../../@core/utils/util.service';
 import { SettingService } from '../../setting.service';
+import 'rxjs';
+
+
+@Component({
+  template: `
+      <h6 class="{{value}}"><b>{{value}}</b></h6>
+  `,
+  styles: [`
+    .online{
+      color:green
+    }
+    .offline{
+      color:red;
+    }
+  `],
+})
+export class StatusRenderComponent implements ViewCell {
+
+  @Input() value: string | number;
+  @Input() rowData: any;
+
+  @Output() save: EventEmitter<any> = new EventEmitter();
+
+
+}
 
 @Component({
   selector: 'ngx-dashboard',
@@ -16,7 +41,7 @@ import { SettingService } from '../../setting.service';
 })
 export class DashboardComponent {
   timer: any;
-  settings:any;
+  settings: any;
   source: LocalDataSource = new LocalDataSource();
 
   constructor(private service: SmartTableService, private _settingService: SettingService, private _router: Router, private _util: UtilService) {
@@ -28,10 +53,12 @@ export class DashboardComponent {
   }
 
   loadData() {
-    let data;
-    this.service.getData().subscribe((res) => {
-      data = res;
-      this.source.load(data);
+    this.service.getData().subscribe((res: any) => {
+      res = res.map(x => {
+        x.status = x.status > 0 ? 'online' : 'offline';
+        return x;
+      });
+      this.source.load(res);
     });
   }
 
@@ -67,13 +94,14 @@ export class DashboardComponent {
           },
           status: {
             title: 'Status',
-            type: 'string',
+            type: 'custom',
             editable: false,
             addable: false,
+            renderComponent: StatusRenderComponent,
           },
           averagedLatency: {
             title: 'Latency(ms)',
-            width:'10px',
+            width: '10px',
             editable: false,
             addable: false,
           },
@@ -103,18 +131,8 @@ export class DashboardComponent {
               },
             },
           },
-          statusThreshold_pings: {
-            title: 'ST(time)',
-            editor: {
-              type: 'list',
-              config: {
-                list: timeOptions,
-              },
-            },
-            type: 'string',
-          },
           downTimePercentThreshold_Value: {
-            title: 'Loss(%)',
+            title: 'Loss Th(%)',
             type: 'string',
           },
           downTimePercentThreshold_pings: {
@@ -126,6 +144,16 @@ export class DashboardComponent {
                 list: timeOptions,
               },
             },
+          },
+          statusThreshold_pings: {
+            title: 'ST(time)',
+            editor: {
+              type: 'list',
+              config: {
+                list: timeOptions,
+              },
+            },
+            type: 'string',
           },
         },
       };

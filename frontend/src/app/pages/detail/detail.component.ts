@@ -14,6 +14,9 @@ export class DetailComponent implements AfterViewInit {
   data = [
     ['Time', 'Latency']
   ];
+  dataDT = [
+    ['Time', 'downTime']
+  ];
   timeFilter = [];
   options ={
     "filters":[
@@ -50,12 +53,19 @@ export class DetailComponent implements AfterViewInit {
       this.data = [
         ['Time', 'Latency']
       ];
+      this.dataDT = [
+        ['Time', 'downTime']
+      ];
       for(var i=0;i<res.length;i++){
         let item = [];
+        let itemDT=[]
         item.push(String(i));
-        let value=res[i][Object.keys(res[i])[0]];
-        item.push(value);
+        itemDT.push(String(i));
+        let value=String(res[i][Object.keys(res[i])[0]]).split('-');
+        item.push(Number(value[0]));
+        itemDT.push(Number(value[1]));
         this.data.push(item);
+        this.dataDT.push(itemDT);
       }
       this.drawChart();
     },(err)=>{
@@ -65,16 +75,24 @@ export class DetailComponent implements AfterViewInit {
 
   drawChart(){
     let data=google.visualization.arrayToDataTable(this.data);
+    let dataDT=google.visualization.arrayToDataTable(this.dataDT);
 
     var options = {
       title: 'Latency',
       curveType: 'function',
       legend: { position: 'bottom' }
     };
+    var optionsDT = {
+      title: 'Loss Percentage',
+      curveType: 'none',
+      legend: { position: 'bottom' }
+    };
 
     var chart = new google.visualization.LineChart(this.latencyChart.nativeElement);
+    var chartDT = new google.visualization.LineChart(this.Chart.nativeElement);
 
     chart.draw(data, options);
+    chartDT.draw(dataDT, optionsDT);
   }
 
   onChange(value){

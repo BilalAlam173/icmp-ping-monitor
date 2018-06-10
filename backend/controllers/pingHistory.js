@@ -45,4 +45,30 @@ module.exports = {
             res.json(Array.prototype.concat.apply([], data));
         }
     },
+    getSimple: async (connection,timeFilter) => {
+        
+
+        let pingHistory = await connectionModel.findOne({
+            _id: connection._id
+        }).populate('pingHistory');
+        pingHistory=pingHistory.pingHistory;
+
+        if (pingHistory.hourlyHistory.length) {
+            let l = pingHistory.hourlyHistory.length - 1;
+            var data = [];
+            for (var i = l; i >= 0; i--) {
+                let hourObj = pingHistory.hourlyHistory[i];
+                timeElapsed = Object.keys(hourObj.values).length * hourObj.interval;
+                let timeLeft = timeElapsed - timeFilter;
+                if (timeLeft > 0) {
+                    data.unshift(helperFns.getHistory(hourObj.values, timeFilter / hourObj.interval));
+                    break;
+                } else {
+                    data.unshift(helperFns.getHistory(hourObj.values, timeElapsed / hourObj.interval));
+                    timeFilter -= timeElapsed;
+                }   
+            }
+            return Array.prototype.concat.apply([], data);
+        }
+    },
 }

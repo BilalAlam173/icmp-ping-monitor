@@ -1,5 +1,6 @@
 const settingsModel = require('../models/setting');
 const helperFns = require('../config/helper-fns');
+const global = require('../config/global');
 module.exports = {
     login: (req, res) => {
         const query = {
@@ -47,7 +48,14 @@ module.exports = {
         const doc = await settingsModel.find({});
         let timePeriod = req.body.timePeriod ? 
         helperFns.toSeconds(req.body.timePeriod.value,req.body.timePeriod.unit)/doc:timePeriod;
-        
+        const oldSettings = await settingsModel.find({});
+        if(oldSettings[0].pingInterval!==req.body.pingInterval){
+            global.pingIntervalChanged=true;
+        }
+        if(oldSettings[0].timePeriod!==req.body.timePeriod){
+            global.timePeriodChanged=true;
+        }
+
         const settings = new settingsModel({
             sender_emailId: req.body.sender_emailId?req.body.sender_emailId:doc.sender_emailId,
             sender_emailPassword: req.body.sender_emailPassword?req.body.sender_emailPassword:doc.sender_emailPassword,
@@ -66,21 +74,5 @@ module.exports = {
                 res.send(doc);
             }
         });
-    },
-    changePingInterval: (req, res) => {
-        if (req.body.value || req.body.unit) {
-            let global = require('../config/global');
-            let intervalInSeconds = helperFns.toSeconds(req.body.value, req.body.unit)
-            if (intervalInSeconds) {
-                global.pingInterval = intervalInSeconds;
-                global.pingIntervalChanged = true;
-                res.send({});
-            } else {
-                res.sendStatus(500).json({
-                    message: 'incorrect data provided',
-                });
-            }
-
-        }
     }
 }

@@ -11,7 +11,7 @@
       <div _ngcontent-c31="" class="col-sm-6">
         <div _ngcontent-c32="" class="form-group">
           <label _ngcontent-c32="">Time period (for averaged calculation)</label>
-          <select _ngcontent-c32="" (change)="onChange($event.target.value)" class="form-control">
+          <select _ngcontent-c32="" (change)="onChange($event)" [(ngModel)]="selectedTimePeriod" class="form-control">
             <option disabled>select time period</option>
             <option _ngcontent-c32="" *ngFor="let item of timeFilter;let i=index" value="{{i}}">Past {{item.value}}{{item.unit}}</option>
           </select>
