@@ -132,8 +132,9 @@ function processCtrl() {
         connection.pingHistory.markModified('hourlyHistory');
 
       }
-
-      connection = await _module.sendAlert(connection, global);
+      if(settings[0].senders_emailId&&sender_emailPassword&&sender_emailHost&&reciever_emailId){
+        connection = await _module.sendAlert(connection, global);
+      }
 
       if(statusCache !==connection.status && connection.message){
         const alert = await _module.emailCtrl.alert(connection,connection.message,Boolean(connection.status));
@@ -146,6 +147,7 @@ function processCtrl() {
   }
 
   async function _sendAlert(connection, global) {
+
 
     //latency
     if (connection.averagedLatency > connection.latencyThreshold_Value) {
