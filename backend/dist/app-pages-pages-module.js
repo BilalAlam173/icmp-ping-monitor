@@ -44706,6 +44706,44 @@ var UtilService = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/models/connection.ts":
+/*!**************************************!*\
+  !*** ./src/app/models/connection.ts ***!
+  \**************************************/
+/*! exports provided: Connection */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Connection", function() { return Connection; });
+var Connection = /** @class */ (function () {
+    function Connection() {
+        this.status = -1;
+        this.averagedLatency = 0;
+        this.pingCount = 0;
+        this.pingsPerHour = -1;
+        this.upTimePercent = 0;
+        this.downTimePercent = 0;
+        this.status = -1;
+        this.averagedLatency = 0;
+        this.latencyThreshold_Value = 1000; //milliseconds
+        this.latencyThreshold_pings = 120;
+        this.latencyThreshold_count = 0; //no of pings
+        this.statusThreshold_pings = 12;
+        this.statusThreshold_count = 0; //no of pings
+        this.downTimePercentThreshold_Value = 75; //percent
+        this.downTimePercentThreshold_pings = 120;
+        this.downTimePercentThreshold_count = 0; //no of pings
+        this.pingCount = 0;
+        this.pingsPerHour = -1;
+    }
+    return Connection;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/pages/dashboard/dashboard.component.html":
 /*!**********************************************************!*\
   !*** ./src/app/pages/dashboard/dashboard.component.html ***!
@@ -44713,7 +44751,7 @@ var UtilService = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"row\">\r\n    <nb-card>\r\n        <nb-card-header>\r\n          Connections\r\n        </nb-card-header>\r\n\r\n        <nb-card-body *ngIf=\"settings\">\r\n          <ng2-smart-table [settings]=\"settings\" [source]=\"source\" (userRowSelect)=\"onUserRowSelect($event)\" (deleteConfirm)=\"onDeleteConfirm($event)\" (createConfirm)=\"onAddConfirm($event)\" (editConfirm)=\"onEditConfirm($event)\">\r\n          </ng2-smart-table>\r\n        </nb-card-body>\r\n      </nb-card>\r\n</div>\r\n"
+module.exports = "<nb-card>\r\n  <nb-card-header _ngcontent-c31=\"\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-1\">\r\n        <h5>Connections</h5>\r\n      </div>\r\n      <div class=\"col-lg-2\" style=\"text-align: left\">\r\n        <ng-template #form>\r\n          <nb-card>\r\n            <nb-card-header style=\"width:100%\">\r\n              Add a new connection(*Required)\r\n            </nb-card-header>\r\n            <nb-card-body>\r\n              <div class=\"p-4\">\r\n                <div class=\"row\">\r\n                  <div class=\"col-lg-6\">\r\n                    <div class=\"form-group\">\r\n                      <label>Name</label>\r\n                      <input type=\"text\" class=\"form-control\" [(ngModel)]=\"connection.name\" placeholder=\"Name\">\r\n                    </div>\r\n                  </div>\r\n                  <div class=\"col-lg-6\">\r\n                    <div class=\"form-group\">\r\n                      <label>IP address*</label>\r\n                      <input type=\"text\" class=\"form-control\" [(ngModel)]=\"connection.ip\" placeholder=\"IP address\">\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n                <div class=\"row\">\r\n                  <div class=\"col-lg-6\">\r\n                    <div class=\"form-group\">\r\n                      <label>Latency Threshold (ms)*</label>\r\n                      <input type=\"text\" class=\"form-control\" [(ngModel)]=\"connection.latencyThreshold_Value\" placeholder=\"Recipients\">\r\n                    </div>\r\n                  </div>\r\n                  <div class=\"col-lg-6\">\r\n                    <div class=\"form-group\">\r\n                      <label>Latency Threshold (time)*</label>\r\n                      <select type=\"text\" class=\"form-control\" [(ngModel)]=\"connection.latencyThreshold_pings\">\r\n                        <option *ngFor=\"let time of timeOptions\" [ngValue]=\"time.value\">\r\n                          {{time.title}}\r\n                        </option>\r\n                      </select>\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n                <div class=\"row\">\r\n                  <div class=\"col-lg-6\">\r\n                    <div class=\"form-group\">\r\n                      <label>Loss % Threshold (%)*</label>\r\n                      <input type=\"text\" class=\"form-control\" [(ngModel)]=\"connection.downTimePercentThreshold_Value\" placeholder=\"Recipients\">\r\n                    </div>\r\n                  </div>\r\n                  <div class=\"col-lg-6\">\r\n                    <div class=\"form-group\">\r\n                      <label>Loss % Threshold (time)*</label>\r\n                      <select type=\"text\" class=\"form-control\" [(ngModel)]=\"connection.downTimePercentThreshold_pings\">\r\n                        <option *ngFor=\"let time of timeOptions\" [ngValue]=\"time.value\">\r\n                          {{time.title}}\r\n                        </option>\r\n                      </select>\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n                <div class=\"row\">\r\n                    <div class=\"col-lg-3\"></div>\r\n                  <div class=\"col-lg-6\">\r\n                    <div class=\"form-group\">\r\n                      <label>Status Threshold (time)*</label>\r\n                      <select type=\"text\" class=\"form-control\" [(ngModel)]=\"connection.statusThreshold_count\">\r\n                        <option *ngFor=\"let time of timeOptions\" [ngValue]=\"time.value\">\r\n                          {{time.title}}\r\n                        </option>\r\n                      </select>\r\n                    </div>\r\n                  </div>\r\n                  <div class=\"col-lg-3\"></div>\r\n                </div>\r\n                <br>\r\n                <button (click)=\"onAddConfirm()\" class=\"btn btn-primary w-100\">Send</button>\r\n              </div>\r\n            </nb-card-body>\r\n          </nb-card>\r\n\r\n        </ng-template>\r\n        <button style=\"background: linear-gradient(to right, #40dcb2, #40dc7e);border:none;border-radius:2px 2px 2px 2px;color: #fff;\"\r\n          [nbPopover]=\"form\" nbPopoverPlacement=\"bottom\">\r\n          <b>\r\n            <i class=\"nb-plus\"></i>\r\n          </b>\r\n        </button>\r\n      </div>\r\n      <div class=\"col-lg-9\"></div>\r\n    </div>\r\n  </nb-card-header>\r\n\r\n  <nb-card-body *ngIf=\"settings\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-2\"></div>\r\n    </div>\r\n\r\n    <ng2-smart-table [settings]=\"settings\" [source]=\"source\" (userRowSelect)=\"onUserRowSelect($event)\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (createConfirm)=\"onAddConfirm($event)\" (editConfirm)=\"onEditConfirm($event)\">\r\n    </ng2-smart-table>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
 
 /***/ }),
 
@@ -44735,6 +44773,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_utils_util_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../@core/utils/util.service */ "./src/app/@core/utils/util.service.ts");
 /* harmony import */ var _setting_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../setting.service */ "./src/app/setting.service.ts");
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
+/* harmony import */ var _models_connection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../models/connection */ "./src/app/models/connection.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -44786,6 +44825,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
+
 var StatusRenderComponent = /** @class */ (function () {
     function StatusRenderComponent() {
         this.save = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
@@ -44819,6 +44859,7 @@ var DashboardComponent = /** @class */ (function () {
         this._router = _router;
         this._util = _util;
         this.source = new ng2_smart_table__WEBPACK_IMPORTED_MODULE_1__["LocalDataSource"]();
+        this.connection = new _models_connection__WEBPACK_IMPORTED_MODULE_7__["Connection"]();
         this.applySettings();
         this.loadData();
         this.timer = setInterval(function () {
@@ -44837,108 +44878,63 @@ var DashboardComponent = /** @class */ (function () {
     };
     DashboardComponent.prototype.applySettings = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var setting, timeOptions;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var setting, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0: return [4 /*yield*/, this._settingService.get().toPromise()];
                     case 1:
-                        setting = _a.sent();
+                        setting = _b.sent();
+                        _a = this;
                         return [4 /*yield*/, this._util.getTimeOptions(setting.pingInterval)];
                     case 2:
-                        timeOptions = _a.sent();
-                        if (timeOptions) {
-                            this.settings = {
-                                add: {
-                                    addButtonContent: '<i class="nb-plus"></i>',
-                                    createButtonContent: '<i class="nb-checkmark"></i>',
-                                    cancelButtonContent: '<i class="nb-close"></i>',
-                                    confirmCreate: true,
+                        _a.timeOptions = _b.sent();
+                        this.settings = {
+                            actions: {
+                                add: false,
+                                edit: false,
+                                delete: true,
+                                position: 'right',
+                            },
+                            delete: {
+                                deleteButtonContent: '<i class="nb-trash"></i>',
+                                confirmDelete: true,
+                            },
+                            columns: {
+                                name: {
+                                    title: 'Name / Description',
+                                    type: 'string',
                                 },
-                                edit: {
-                                    editButtonContent: '<i class="nb-edit"></i>',
-                                    saveButtonContent: '<i (click)="onEditConfirm()" class="nb-checkmark"></i>',
-                                    cancelButtonContent: '<i class="nb-close"></i>',
-                                    confirmSave: true,
+                                ip: {
+                                    title: 'IP address',
+                                    type: 'string',
                                 },
-                                delete: {
-                                    deleteButtonContent: '<i class="nb-trash"></i>',
-                                    confirmDelete: true,
+                                status: {
+                                    title: 'Status',
+                                    type: 'custom',
+                                    editable: false,
+                                    addable: false,
+                                    renderComponent: StatusRenderComponent,
                                 },
-                                columns: {
-                                    name: {
-                                        title: 'Name / Description',
-                                        type: 'string',
-                                    },
-                                    ip: {
-                                        title: 'IP address   ',
-                                        type: 'string',
-                                    },
-                                    status: {
-                                        title: 'Status',
-                                        type: 'custom',
-                                        editable: false,
-                                        addable: false,
-                                        renderComponent: StatusRenderComponent,
-                                    },
-                                    averagedLatency: {
-                                        title: 'Latency(ms)',
-                                        width: '10px',
-                                        editable: false,
-                                        addable: false,
-                                    },
-                                    upTimePercent: {
-                                        title: 'uptime(%)',
-                                        type: 'string',
-                                        editable: false,
-                                        addable: false,
-                                    },
-                                    downTimePercent: {
-                                        title: 'Loss(%)',
-                                        type: 'string',
-                                        editable: false,
-                                        addable: false,
-                                    },
-                                    latencyThreshold_Value: {
-                                        title: 'LT(ms)',
-                                        type: 'string',
-                                    },
-                                    latencyThreshold_pings: {
-                                        title: 'LT(time)',
-                                        type: 'string',
-                                        editor: {
-                                            type: 'list',
-                                            config: {
-                                                list: timeOptions,
-                                            },
-                                        },
-                                    },
-                                    downTimePercentThreshold_Value: {
-                                        title: 'Loss Th(%)',
-                                        type: 'string',
-                                    },
-                                    downTimePercentThreshold_pings: {
-                                        title: 'Loss Th(time)',
-                                        type: 'string',
-                                        editor: {
-                                            type: 'list',
-                                            config: {
-                                                list: timeOptions,
-                                            },
-                                        },
-                                    },
-                                    statusThreshold_pings: {
-                                        title: 'ST(time)',
-                                        editor: {
-                                            type: 'list',
-                                            config: {
-                                                list: timeOptions,
-                                            },
-                                        },
-                                        type: 'string',
-                                    },
+                                averagedLatency: {
+                                    title: 'Latency(ms)',
+                                    width: '10px',
+                                    editable: false,
+                                    addable: false,
                                 },
-                            };
-                        }
+                                upTimePercent: {
+                                    title: 'uptime(%)',
+                                    type: 'string',
+                                    editable: false,
+                                    addable: false,
+                                },
+                                downTimePercent: {
+                                    title: 'Loss(%)',
+                                    type: 'string',
+                                    editable: false,
+                                    addable: false,
+                                },
+                            },
+                        };
                         return [2 /*return*/];
                 }
             });
@@ -44962,11 +44958,11 @@ var DashboardComponent = /** @class */ (function () {
         });
         event.confirm.resolve();
     };
-    DashboardComponent.prototype.onAddConfirm = function (event) {
-        console.log(event);
-        this.service.add(event.newData).subscribe(function (res) {
+    DashboardComponent.prototype.onAddConfirm = function () {
+        console.log(this.connection);
+        this.connection;
+        this.service.add(this.connection).subscribe(function (res) {
         });
-        event.confirm.resolve();
     };
     DashboardComponent.prototype.ngOnDestroy = function () {
         clearInterval(this.timer);
@@ -45154,7 +45150,7 @@ var DetailService = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<nb-card>\r\n  <nb-card-header _ngcontent-c31=\"\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-2\">Connection Details</div>\r\n      <div class=\"col-lg-7\"></div>\r\n      <div class=\"col-lg-3\">\r\n        <div _ngcontent-c32=\"\" class=\"form-group\">\r\n          <select _ngcontent-c32=\"\" (change)=\"onChange($event.target.value)\" class=\"form-control gradient text-white\" selected=\"0\">\r\n            <option disabled class=\"text-black\">\r\n              <i class=\"nb-plus\"></i>Past 10m</option>\r\n            <option _ngcontent-c32=\"\" class=\"text-black\" *ngFor=\"let item of timeFilter;let i=index\" value=\"{{i}}\">Past {{item.value}}{{item.unit}}</option>\r\n          </select>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </nb-card-header>\r\n  <nb-card-body>\r\n    <nb-card>\r\n      <nb-card-header>Latency History</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #latencyChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n    <nb-card>\r\n      <nb-card-header>Loss Percentage History</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #downTimeChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
+module.exports = "<nb-card>\r\n  <nb-card-header _ngcontent-c31=\"\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-2\">Connection Details</div>\r\n      <div class=\"col-lg-6\"></div>\r\n      <div class=\"col-lg-1\">\r\n        <button class=\"btn btn-danger\" *ngIf=\"!paused\" (click)=\"onPause()\"> <i class=\"nb-pause\"></i> Pause</button>\r\n        <button class=\"btn btn-primary\" *ngIf=\"paused\" (click)=\"onPause()\"> <i class=\"nb-play\"></i> Start</button>\r\n      </div>\r\n      <div class=\"col-lg-3\">\r\n        <div _ngcontent-c32=\"\" class=\"form-group\">\r\n          <select _ngcontent-c32=\"\" (change)=\"onChange($event.target.value)\" class=\"form-control gradient text-white\" selected=\"0\">\r\n            <option disabled class=\"text-black\">\r\n              <i class=\"nb-plus\"></i>Past 10m</option>\r\n            <option _ngcontent-c32=\"\" class=\"text-black\" *ngFor=\"let item of timeFilter;let i=index\" value=\"{{i}}\">Past {{item.value}}{{item.unit}}</option>\r\n          </select>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </nb-card-header>\r\n  <nb-card-body>\r\n    <nb-card>\r\n      <nb-card-header>Latency History</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #latencyChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n    <nb-card>\r\n      <nb-card-header>Loss Percentage History</nb-card-header>\r\n      <nb-card-body>\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-12\">\r\n            <div #downTimeChart class=\"chart\"></div>\r\n          </div>\r\n        </div>\r\n      </nb-card-body>\r\n    </nb-card>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
 
 /***/ }),
 
@@ -45191,6 +45187,41 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 
 
 
@@ -45198,6 +45229,7 @@ var DetailComponent = /** @class */ (function () {
     function DetailComponent(_detailService, route) {
         this._detailService = _detailService;
         this.route = route;
+        this.paused = false;
         this.data = [
             ['Time', 'Latency']
         ];
@@ -45222,59 +45254,90 @@ var DetailComponent = /** @class */ (function () {
         var _this = this;
         this.timeFilter = this._detailService.timeFilter;
         this.route.params.subscribe(function (res) {
-            _this.getData(res);
-            google.charts.load('current', { 'packages': ['corechart'] });
+            _this.id = res.id;
+            google.charts.load('current', { 'packages': ['annotatedtimeline'] });
             google.charts.setOnLoadCallback(function () { _this.drawChart(); });
             _this.timer = setInterval(function () {
-                _this.getData(res);
+                _this.drawChart();
             }, 5000);
         });
     };
-    DetailComponent.prototype.getData = function (res) {
+    DetailComponent.prototype.getData = function () {
         var _this = this;
-        console.log('break');
-        this._detailService.getData(res.id, this.options).subscribe(function (res) {
-            _this.data = [
-                ['Time', 'Latency']
-            ];
-            _this.dataDT = [
-                ['Time', 'Loss %']
-            ];
-            for (var i = 0; i < res.length; i++) {
-                var item = [];
-                var itemDT = [];
-                item.push(String(i));
-                itemDT.push(String(i));
-                var value = String(res[i][Object.keys(res[i])[0]]).split('-');
-                item.push(Number(value[0]));
-                itemDT.push(Number(value[1]));
-                _this.data.push(item);
-                _this.dataDT.push(itemDT);
-            }
-            _this.drawChart();
-        }, function (err) {
-            console.log(err);
+        return new Promise(function (resolve) {
+            _this._detailService.getData(_this.id, _this.options).subscribe(function (res) {
+                _this.data = [
+                    [{ label: 'Time', type: 'date' }, { label: 'Latency', type: 'number' }]
+                ];
+                _this.dataDT = [
+                    [{ label: 'Time', type: 'date' }, { label: 'Loss %', type: 'number' }]
+                ];
+                for (var i = 0; i < res.length; i++) {
+                    var item = [];
+                    var itemDT = [];
+                    var time = new Date(Object.keys(res[i])[0]);
+                    var value = String(res[i][Object.keys(res[i])[0]]).split('-');
+                    item.push(time);
+                    item.push(Number(value[0]));
+                    itemDT.push(time);
+                    itemDT.push(Number(value[1]));
+                    _this.data.push(item);
+                    _this.dataDT.push(itemDT);
+                    resolve();
+                }
+            }, function (err) {
+                console.log(err);
+            });
         });
     };
+    DetailComponent.prototype.onPause = function () {
+        var _this = this;
+        if (this.paused) {
+            this.paused = false;
+            this.timer = setInterval(function () {
+                _this.drawChart();
+            }, 5000);
+        }
+        else {
+            this.paused = true;
+            clearInterval(this.timer);
+        }
+    };
     DetailComponent.prototype.drawChart = function () {
-        var data = google.visualization.arrayToDataTable(this.data);
-        var dataDT = google.visualization.arrayToDataTable(this.dataDT);
-        var options = {
-            title: 'Latency',
-            curveType: 'function',
-            legend: { position: 'bottom' }
-        };
-        var optionsDT = {
-            title: 'Loss Percentage',
-            curveType: 'none',
-            legend: { position: 'bottom' }
-        };
-        var chart = new google.visualization.LineChart(this.latencyChart.nativeElement);
-        var chartDT = new google.visualization.LineChart(this.Chart.nativeElement);
-        chart.draw(data, options);
-        chartDT.draw(dataDT, optionsDT);
+        return __awaiter(this, void 0, void 0, function () {
+            var dataPromise, data, dataDT, options, optionsDT, chart, chartDT;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getData()];
+                    case 1:
+                        dataPromise = _a.sent();
+                        data = new google.visualization.arrayToDataTable(this.data);
+                        dataDT = new google.visualization.arrayToDataTable(this.dataDT);
+                        options = {
+                            title: 'Latency',
+                            curveType: 'function',
+                            allowRedraw: true,
+                            displayZoomButtons: false,
+                            legend: { position: 'bottom' }
+                        };
+                        optionsDT = {
+                            title: 'Loss Percentage',
+                            curveType: 'function',
+                            allowRedraw: true,
+                            displayZoomButtons: false,
+                            legend: { position: 'bottom' }
+                        };
+                        chart = new google.visualization.AnnotatedTimeLine(this.latencyChart.nativeElement);
+                        chartDT = new google.visualization.AnnotatedTimeLine(this.Chart.nativeElement);
+                        chart.draw(data, options);
+                        chartDT.draw(dataDT, optionsDT);
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     DetailComponent.prototype.onChange = function (value) {
+        this.paused = false;
         var obj = this.timeFilter[value];
         this.options.filters = [
             {
