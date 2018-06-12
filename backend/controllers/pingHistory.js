@@ -35,10 +35,10 @@ module.exports = {
                 timeElapsed = Object.keys(hourObj.values).length * hourObj.interval;
                 let timeLeft = timeElapsed - timeFilter;
                 if (timeLeft > 0) {
-                    data.unshift(helperFns.getHistory(hourObj.values, timeFilter / hourObj.interval));
+                    data.unshift(helperFns.getHistory(hourObj, timeFilter / hourObj.interval));
                     break;
                 } else {
-                    data.unshift(helperFns.getHistory(hourObj.values, timeElapsed / hourObj.interval));
+                    data.unshift(helperFns.getHistory(hourObj, timeElapsed / hourObj.interval));
                     timeFilter -= timeElapsed;
                 }   
             }

@@ -8,7 +8,7 @@
         <ng-template #form>
           <nb-card>
             <nb-card-header style="width:100%">
-              Add a new connection
+              Add a new connection(*Required)
             </nb-card-header>
             <nb-card-body>
               <div class="p-4">
@@ -21,7 +21,7 @@
                   </div>
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label>IP address</label>
+                      <label>IP address*</label>
                       <input type="text" class="form-control" [(ngModel)]="connection.ip" placeholder="IP address">
                     </div>
                   </div>
@@ -29,13 +29,13 @@
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label>Latency Threshold (ms)</label>
+                      <label>Latency Threshold (ms)*</label>
                       <input type="text" class="form-control" [(ngModel)]="connection.latencyThreshold_Value" placeholder="Recipients">
                     </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label>Latency Threshold (time)</label>
+                      <label>Latency Threshold (time)*</label>
                       <select type="text" class="form-control" [(ngModel)]="connection.latencyThreshold_pings">
                         <option *ngFor="let time of timeOptions" [ngValue]="time.value">
                           {{time.title}}
@@ -47,13 +47,13 @@
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label>Loss % Threshold (%)</label>
+                      <label>Loss % Threshold (%)*</label>
                       <input type="text" class="form-control" [(ngModel)]="connection.downTimePercentThreshold_Value" placeholder="Recipients">
                     </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label>Loss % Threshold (time)</label>
+                      <label>Loss % Threshold (time)*</label>
                       <select type="text" class="form-control" [(ngModel)]="connection.downTimePercentThreshold_pings">
                         <option *ngFor="let time of timeOptions" [ngValue]="time.value">
                           {{time.title}}
@@ -66,7 +66,7 @@
                     <div class="col-lg-3"></div>
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label>Status Threshold (time)</label>
+                      <label>Status Threshold (time)*</label>
                       <select type="text" class="form-control" [(ngModel)]="connection.statusThreshold_count">
                         <option *ngFor="let time of timeOptions" [ngValue]="time.value">
                           {{time.title}}

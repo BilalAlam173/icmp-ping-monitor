@@ -93,15 +93,17 @@ helperFns.toSeconds = function (time, unit) {
     }
 }
 
-helperFns.getHistory = function (values, range) {
+helperFns.getHistory = function (hour, range) {
     let i = 1;
-    let n = Object.keys(values).length;
+    let n = Object.keys(hour.values).length;
     let r = n - range;
+    let time = hour.timestamp_hour;
     var data = [];
-    for (var key in values) {
+    for (var key in hour.values) {
         if (i > r) {
             let obj = {};
-            obj[`${key}`] = values[key];
+            time.setSeconds(time.getSeconds()+5);
+            obj[`${time?time:key}`] = hour.values[key];
             data.push(obj);
 
         }

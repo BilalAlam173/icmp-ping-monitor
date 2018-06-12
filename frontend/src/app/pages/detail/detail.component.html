@@ -2,7 +2,11 @@
   <nb-card-header _ngcontent-c31="">
     <div class="row">
       <div class="col-lg-2">Connection Details</div>
-      <div class="col-lg-7"></div>
+      <div class="col-lg-6"></div>
+      <div class="col-lg-1">
+        <button class="btn btn-danger" *ngIf="!paused" (click)="onPause()"> <i class="nb-pause"></i> Pause</button>
+        <button class="btn btn-primary" *ngIf="paused" (click)="onPause()"> <i class="nb-play"></i> Start</button>
+      </div>
       <div class="col-lg-3">
         <div _ngcontent-c32="" class="form-group">
           <select _ngcontent-c32="" (change)="onChange($event.target.value)" class="form-control gradient text-white" selected="0">

@@ -8,107 +8,130 @@ declare var google: any;
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss']
 })
-export class DetailComponent implements AfterViewInit,OnDestroy {
+export class DetailComponent implements AfterViewInit, OnDestroy {
   @ViewChild('latencyChart') latencyChart: ElementRef;
   @ViewChild('downTimeChart') Chart: ElementRef;
-  timer:any;
-  data = [
+  paused = false;
+  timer: any;
+  id: String;
+  data: any = [
     ['Time', 'Latency']
   ];
-  dataDT = [
+  dataDT: any = [
     ['Time', 'downTime']
   ];
   timeFilter = [];
-  options ={
-    "filters":[
+  options = {
+    "filters": [
       {
-         "type":"timeFilter",
-         "value":"10",
-         "unit":"m"
+        "type": "timeFilter",
+        "value": "10",
+        "unit": "m"
       }]
   }
 
 
-  constructor(private _detailService:DetailService,private route:ActivatedRoute) { }
+  constructor(private _detailService: DetailService, private route: ActivatedRoute) { }
 
   ngAfterViewInit() {
     this.loadChart();
   }
-  loadChart(){
-    this.timeFilter=this._detailService.timeFilter;
-    this.route.params.subscribe((res)=>{
-      this.getData(res);
+  loadChart() {
+    this.timeFilter = this._detailService.timeFilter;
+    this.route.params.subscribe((res) => {
+      this.id = res.id;
 
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(()=>{this.drawChart()});
-      this.timer=setInterval(()=>{
-        this.getData(res);
+      google.charts.load('current', { 'packages': ['annotatedtimeline'] });
+      google.charts.setOnLoadCallback(() => { this.drawChart() });
+      this.timer = setInterval(() => {
+        this.drawChart();
 
-      },5000);
+      }, 5000);
     })
   }
 
-  getData(res){
-    console.log('break')
-    this._detailService.getData(res.id,this.options).subscribe((res:Array<any>)=>{
-      this.data = [
-        ['Time', 'Latency']
-      ];
-      this.dataDT = [
-        ['Time', 'Loss %']
-      ];
-      for(var i=0;i<res.length;i++){
-        let item = [];
-        let itemDT=[]
-        item.push(String(i));
-        itemDT.push(String(i));
-        let value=String(res[i][Object.keys(res[i])[0]]).split('-');
-        item.push(Number(value[0]));
-        itemDT.push(Number(value[1]));
-        this.data.push(item);
-        this.dataDT.push(itemDT);
-      }
-      this.drawChart();
-    },(err)=>{
-      console.log(err);
-    });
+  getData() {
+    return new Promise(resolve => {
+      this._detailService.getData(this.id, this.options).subscribe((res: Array<any>) => {
+        this.data = [
+          [{ label: 'Time', type: 'date' }, { label: 'Latency', type: 'number' }]
+        ];
+        this.dataDT = [
+          [{ label: 'Time', type: 'date' }, { label: 'Loss %', type: 'number' }]
+        ];
+        for (var i = 0; i < res.length; i++) {
+          let item = [];
+          let itemDT = []
+          let time = new Date(Object.keys(res[i])[0])
+          let value = String(res[i][Object.keys(res[i])[0]]).split('-');
+          item.push(time);
+          item.push(Number(value[0]));
+          itemDT.push(time);
+          itemDT.push(Number(value[1]));
+          this.data.push(item);
+          this.dataDT.push(itemDT);
+          resolve();
+        }
+      }, (err) => {
+        console.log(err);
+      });
+    })
+
+  }
+  onPause() {
+    if (this.paused) {
+      this.paused = false;
+      this.timer = setInterval(() => {
+        this.drawChart();
+
+      }, 5000);
+    } else {
+      this.paused = true;
+      clearInterval(this.timer);
+    }
   }
 
-  drawChart(){
-    let data=google.visualization.arrayToDataTable(this.data);
-    let dataDT=google.visualization.arrayToDataTable(this.dataDT);
+  async drawChart() {
+    const dataPromise = await this.getData();
+    let data = new google.visualization.arrayToDataTable(this.data);
+    let dataDT = new google.visualization.arrayToDataTable(this.dataDT);
 
     var options = {
       title: 'Latency',
       curveType: 'function',
+      allowRedraw: true,
+      displayZoomButtons: false,
       legend: { position: 'bottom' }
     };
     var optionsDT = {
       title: 'Loss Percentage',
-      curveType: 'none',
+      curveType: 'function',
+      allowRedraw: true,
+      displayZoomButtons: false,
       legend: { position: 'bottom' }
     };
 
-    var chart = new google.visualization.LineChart(this.latencyChart.nativeElement);
-    var chartDT = new google.visualization.LineChart(this.Chart.nativeElement);
+    var chart = new google.visualization.AnnotatedTimeLine(this.latencyChart.nativeElement);
+    var chartDT = new google.visualization.AnnotatedTimeLine(this.Chart.nativeElement);
 
     chart.draw(data, options);
     chartDT.draw(dataDT, optionsDT);
   }
 
-  onChange(value){
-    let obj =this.timeFilter[value];
-    this.options.filters=[
+  onChange(value) {
+    this.paused=false;
+    let obj = this.timeFilter[value];
+    this.options.filters = [
       {
-         "type":"timeFilter",
-         "value":obj.value,
-         "unit":obj.unit
+        "type": "timeFilter",
+        "value": obj.value,
+        "unit": obj.unit
       }];
 
-      this.loadChart();
+    this.loadChart();
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     clearInterval(this.timer);
   }
 
