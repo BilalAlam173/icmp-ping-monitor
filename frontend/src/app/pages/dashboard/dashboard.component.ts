@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { UtilService } from '../../@core/utils/util.service';
 import { SettingService } from '../../setting.service';
 import 'rxjs';
+import { Connection } from '../../models/connection';
 
 
 @Component({
@@ -43,6 +44,8 @@ export class DashboardComponent implements OnDestroy{
   timer: any;
   settings: any;
   source: LocalDataSource = new LocalDataSource();
+  connection= new Connection();
+  timeOptions:any;
 
   constructor(private service: SmartTableService, private _settingService: SettingService, private _router: Router, private _util: UtilService) {
     this.applySettings();
@@ -64,20 +67,13 @@ export class DashboardComponent implements OnDestroy{
 
   async applySettings() {
     let setting: any = await this._settingService.get().toPromise();
-    let timeOptions = await this._util.getTimeOptions(setting.pingInterval);
-    if (timeOptions) {
+    this.timeOptions = await this._util.getTimeOptions(setting.pingInterval);
       this.settings = {
-        add: {
-          addButtonContent: '<i class="nb-plus"></i>',
-          createButtonContent: '<i class="nb-checkmark"></i>',
-          cancelButtonContent: '<i class="nb-close"></i>',
-          confirmCreate: true,
-        },
-        edit: {
-          editButtonContent: '<i class="nb-edit"></i>',
-          saveButtonContent: '<i (click)="onEditConfirm()" class="nb-checkmark"></i>',
-          cancelButtonContent: '<i class="nb-close"></i>',
-          confirmSave: true,
+        actions: {
+          add: false,
+          edit: false,
+          delete: true,
+          position: 'right',
         },
         delete: {
           deleteButtonContent: '<i class="nb-trash"></i>',
@@ -89,7 +85,7 @@ export class DashboardComponent implements OnDestroy{
             type: 'string',
           },
           ip: {
-            title: 'IP address   ',
+            title: 'IP address',
             type: 'string',
           },
           status: {
@@ -117,47 +113,46 @@ export class DashboardComponent implements OnDestroy{
             editable: false,
             addable: false,
           },
-          latencyThreshold_Value: {
-            title: 'LT(ms)',
-            type: 'string',
-          },
-          latencyThreshold_pings: {
-            title: 'LT(time)',
-            type: 'string',
-            editor: {
-              type: 'list',
-              config: {
-                list: timeOptions,
-              },
-            },
-          },
-          downTimePercentThreshold_Value: {
-            title: 'Loss Th(%)',
-            type: 'string',
-          },
-          downTimePercentThreshold_pings: {
-            title: 'Loss Th(time)',
-            type: 'string',
-            editor: {
-              type: 'list',
-              config: {
-                list: timeOptions,
-              },
-            },
-          },
-          statusThreshold_pings: {
-            title: 'ST(time)',
-            editor: {
-              type: 'list',
-              config: {
-                list: timeOptions,
-              },
-            },
-            type: 'string',
-          },
+          // latencyThreshold_Value: {
+          //   title: 'LT(ms)',
+          //   type: 'string',
+          // },
+          // latencyThreshold_pings: {
+          //   title: 'LT(time)',
+          //   type: 'string',
+          //   editor: {
+          //     type: 'list',
+          //     config: {
+          //       list: timeOptions,
+          //     },
+          //   },
+          // },
+          // downTimePercentThreshold_Value: {
+          //   title: 'Loss Th(%)',
+          //   type: 'string',
+          // },
+          // downTimePercentThreshold_pings: {
+          //   title: 'Loss Th(time)',
+          //   type: 'string',
+          //   editor: {
+          //     type: 'list',
+          //     config: {
+          //       list: timeOptions,
+          //     },
+          //   },
+          // },
+          // statusThreshold_pings: {
+          //   title: 'ST(time)',
+          //   editor: {
+          //     type: 'list',
+          //     config: {
+          //       list: timeOptions,
+          //     },
+          //   },
+          //   type: 'string',
+          // },
         },
       };
-    }
 
   }
 
@@ -181,12 +176,12 @@ export class DashboardComponent implements OnDestroy{
     });
     event.confirm.resolve();
   }
-  onAddConfirm(event): void {
-    console.log(event)
-    this.service.add(event.newData).subscribe((res) => {
+  onAddConfirm(): void {
+    console.log(this.connection)
+    this.connection
+    this.service.add(this.connection).subscribe((res) => {
 
     });
-    event.confirm.resolve();
   }
 
   ngOnDestroy(){

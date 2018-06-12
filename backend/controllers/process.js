@@ -72,13 +72,20 @@ function processCtrl() {
 
     const pingHistory = await _module.pingHistoryCtrl.getSimple(connection,time);
     const n =pingHistory.length;
-    const reducer =(averagedLatency,item)=>{
+    const reducerLT =(averagedLatency,item)=>{
       for(var key in item){
         return Number(averagedLatency) + Number(item[key].split('-')[0]);
       }
     }
-    const sum = pingHistory.reduce(reducer,0);
-    connection.averagedLatency=Math.floor(sum/n);
+    const reducerUT =(averagedDownTime,item)=>{
+      for(var key in item){
+        return Number(averagedLatency) + Number(item[key].split('-')[1]);
+      }
+    }
+    const sumLT = pingHistory.reduce(reducerLT,0);
+    const sumUT = pingHistory.reduce(reducerDT,0);
+    connection.averagedLatency=Math.floor(sumLT/n);
+    connection.upTimePercent=Math.floor(sumUT/n);
     return connection;
   }
 

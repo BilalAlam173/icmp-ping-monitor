@@ -10,6 +10,7 @@ import { DetailComponent } from './detail/detail.component';
 import { StatusRenderComponent } from './dashboard/dashboard.component';
 
 
+
 const PAGES_COMPONENTS = [
   PagesComponent,
 ];
