@@ -2051,8 +2051,8 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 var global = /** @class */ (function () {
     function global() {
-        //url='http://ping.elevate.tech/api/'
-        this.url = 'http://localhost:3000/api/';
+        this.url = 'http://ping.elevate.tech/api/';
+        // url='http://localhost:3000/api/'
     }
     global = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])()
