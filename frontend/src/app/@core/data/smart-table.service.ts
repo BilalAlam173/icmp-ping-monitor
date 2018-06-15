@@ -10,8 +10,11 @@ export class SmartTableService {
   getData() {
     return this._http.get(this._global.url+'connection');
   }
+  getOne(id) {
+    return this._http.get(`${this._global.url}connection/${id}`);
+  }
   edit(connection){
-    return this._http.put(`${this._global.url}connection/${connection._id}`,connection);
+    return this._http.put(`${this._global.url}connection`,connection);
   }
   delete(connection){
     return this._http.delete(`${this._global.url}connection/${connection._id}`,connection);

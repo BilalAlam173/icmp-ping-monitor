@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter,OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { LocalDataSource, ViewCell } from 'ng2-smart-table';
 import { SmartTableService } from './../../@core/data/smart-table.service';
 import { Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { UtilService } from '../../@core/utils/util.service';
 import { SettingService } from '../../setting.service';
 import 'rxjs';
 import { Connection } from '../../models/connection';
+import { LoaderComponent } from '../loader/loader.component';
 
 
 @Component({
@@ -40,12 +41,14 @@ export class StatusRenderComponent implements ViewCell {
     }
   `],
 })
-export class DashboardComponent implements OnDestroy{
+export class DashboardComponent implements OnDestroy {
   timer: any;
   settings: any;
   source: LocalDataSource = new LocalDataSource();
-  connection= new Connection();
-  timeOptions:any;
+  connection = new Connection();
+  timeOptions: any;
+  isLoading = false;
+
 
   constructor(private service: SmartTableService, private _settingService: SettingService, private _router: Router, private _util: UtilService) {
     this.applySettings();
@@ -68,91 +71,53 @@ export class DashboardComponent implements OnDestroy{
   async applySettings() {
     let setting: any = await this._settingService.get().toPromise();
     this.timeOptions = await this._util.getTimeOptions(setting.pingInterval);
-      this.settings = {
-        actions: {
-          add: false,
-          edit: false,
-          delete: true,
-          position: 'right',
+    this.settings = {
+      actions: {
+        add: false,
+        edit: false,
+        delete: true,
+        position: 'right',
+      },
+      delete: {
+        deleteButtonContent: '<i class="nb-trash"></i>',
+        confirmDelete: true,
+      },
+      columns: {
+        name: {
+          title: 'Name / Description',
+          type: 'string',
         },
-        delete: {
-          deleteButtonContent: '<i class="nb-trash"></i>',
-          confirmDelete: true,
+        ip: {
+          title: 'IP address',
+          type: 'string',
         },
-        columns: {
-          name: {
-            title: 'Name / Description',
-            type: 'string',
-          },
-          ip: {
-            title: 'IP address',
-            type: 'string',
-          },
-          status: {
-            title: 'Status',
-            type: 'custom',
-            editable: false,
-            addable: false,
-            renderComponent: StatusRenderComponent,
-          },
-          averagedLatency: {
-            title: 'Latency(ms)',
-            width: '10px',
-            editable: false,
-            addable: false,
-          },
-          upTimePercent: {
-            title: 'uptime(%)',
-            type: 'string',
-            editable: false,
-            addable: false,
-          },
-          downTimePercent: {
-            title: 'Loss(%)',
-            type: 'string',
-            editable: false,
-            addable: false,
-          },
-          // latencyThreshold_Value: {
-          //   title: 'LT(ms)',
-          //   type: 'string',
-          // },
-          // latencyThreshold_pings: {
-          //   title: 'LT(time)',
-          //   type: 'string',
-          //   editor: {
-          //     type: 'list',
-          //     config: {
-          //       list: timeOptions,
-          //     },
-          //   },
-          // },
-          // downTimePercentThreshold_Value: {
-          //   title: 'Loss Th(%)',
-          //   type: 'string',
-          // },
-          // downTimePercentThreshold_pings: {
-          //   title: 'Loss Th(time)',
-          //   type: 'string',
-          //   editor: {
-          //     type: 'list',
-          //     config: {
-          //       list: timeOptions,
-          //     },
-          //   },
-          // },
-          // statusThreshold_pings: {
-          //   title: 'ST(time)',
-          //   editor: {
-          //     type: 'list',
-          //     config: {
-          //       list: timeOptions,
-          //     },
-          //   },
-          //   type: 'string',
-          // },
+        status: {
+          title: 'Status',
+          type: 'custom',
+          editable: false,
+          addable: false,
+          renderComponent: StatusRenderComponent,
         },
-      };
+        averagedLatency: {
+          title: 'Latency(ms)',
+          width: '10px',
+          editable: false,
+          addable: false,
+        },
+        upTimePercent: {
+          title: 'uptime(%)',
+          type: 'string',
+          editable: false,
+          addable: false,
+        },
+        downTimePercent: {
+          title: 'Loss(%)',
+          type: 'string',
+          editable: false,
+          addable: false,
+        },
+      },
+    };
 
   }
 
@@ -177,14 +142,17 @@ export class DashboardComponent implements OnDestroy{
     event.confirm.resolve();
   }
   onAddConfirm(): void {
-    console.log(this.connection)
     this.connection
+    this.isLoading = true;
     this.service.add(this.connection).subscribe((res) => {
-
+      this.isLoading = false;
+    },errResponse=>{
+      this.isLoading=false;
+      window.alert(errResponse.error.message?errResponse.error.message:'something went wrong!')
     });
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     clearInterval(this.timer);
   }
 }

@@ -1,5 +1,6 @@
 .chart {
-  height: 500px;
+  height: 300px;
+  width: 95%;
 }
 .text-white{
   color:white;
@@ -8,6 +9,9 @@
   color:black;
 }
 .gradient {
-  border:solid linear-gradient(to right, #40dcb2, #40dc7e);
+  border:none;
   background-image: linear-gradient(to right, #40dcb2, #40dc7e);
+}
+.btn-full{
+  width: 100%;
 }

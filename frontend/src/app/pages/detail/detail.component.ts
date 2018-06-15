@@ -1,6 +1,8 @@
 import { Component, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { DetailService } from '../detail.service';
 import { ActivatedRoute } from '@angular/router';
+import { Connection } from '../../models/connection';
+import { SmartTableService } from '../../@core/data/smart-table.service';
 declare var google: any;
 
 @Component({
@@ -12,6 +14,7 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
   @ViewChild('latencyChart') latencyChart: ElementRef;
   @ViewChild('downTimeChart') Chart: ElementRef;
   paused = false;
+  connection = new Connection();
   timer: any;
   id: String;
   data: any = [
@@ -31,7 +34,7 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
   }
 
 
-  constructor(private _detailService: DetailService, private route: ActivatedRoute) { }
+  constructor(private _detailService: DetailService, private route: ActivatedRoute,private _connectionService:SmartTableService) { }
 
   ngAfterViewInit() {
     this.loadChart();
@@ -40,6 +43,9 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
     this.timeFilter = this._detailService.timeFilter;
     this.route.params.subscribe((res) => {
       this.id = res.id;
+      this._connectionService.getOne(this.id).subscribe((connection:any)=>{
+        this.connection=connection;
+      })
 
       google.charts.load('current', { 'packages': ['annotatedtimeline'] });
       google.charts.setOnLoadCallback(() => { this.drawChart() });

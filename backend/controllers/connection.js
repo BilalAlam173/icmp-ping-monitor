@@ -76,14 +76,17 @@ module.exports = {
         });
     },
     update: (req, res) => {
-        if(!req.params.id){
+        if(!req.body._id){
             return res
             .status(500)
             .send({
                 error: "Invalid ID in request paramaters"
             })
         }
-        connetionModel.findByIdAndUpdate(req.params.id, req.body, (err, connection) => {
+        let connection = JSON.parse(JSON.stringify(req.body));
+        delete connection._id;
+        delete connection.__v;
+        connetionModel.findByIdAndUpdate(req.body._id, connection, {new: true}, (err, connection) => {
             if (err) {
                 return res
                     .status(500)
@@ -92,7 +95,7 @@ module.exports = {
                     })
             }else{
                 res.send({
-                    success: "success"
+                    connection: connection
                 });
             }
         });

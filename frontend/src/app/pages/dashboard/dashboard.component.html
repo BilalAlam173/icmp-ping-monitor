@@ -1,96 +1,100 @@
+<div class="modal fade" id="myModal" role="dialog">
+  <div class="modal-dialog" style="top:30%">
+
+
+    <!-- Modal content-->
+    <div class="modal-content" style="vertical-align: middle">
+      <loader *ngIf="isLoading"></loader>
+      <nb-card>
+        <nb-card-header style="width:100%">
+          Add a new connection(*Required)
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </nb-card-header>
+        <nb-card-body>
+          <div class="p-4">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input type="text" class="form-control" [(ngModel)]="connection.name" placeholder="Name">
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label>IP address*</label>
+                  <input type="text" class="form-control" [(ngModel)]="connection.ip" placeholder="IP address">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label>Latency Threshold (ms)*</label>
+                  <input type="text" class="form-control" [(ngModel)]="connection.latencyThreshold_Value" placeholder="Recipients">
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label>Latency Threshold (time)*</label>
+                  <select type="text" class="form-control" [(ngModel)]="connection.latencyThreshold_pings">
+                    <option *ngFor="let time of timeOptions" [ngValue]="time.value">
+                      {{time.title}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label>Loss % Threshold (%)*</label>
+                  <input type="text" class="form-control" [(ngModel)]="connection.downTimePercentThreshold_Value" placeholder="Recipients">
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label>Loss % Threshold (time)*</label>
+                  <select type="text" class="form-control" [(ngModel)]="connection.downTimePercentThreshold_pings">
+                    <option *ngFor="let time of timeOptions" [ngValue]="time.value">
+                      {{time.title}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-3"></div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label>Status Threshold (time)*</label>
+                  <select type="text" class="form-control" [(ngModel)]="connection.statusThreshold_count">
+                    <option *ngFor="let time of timeOptions" [ngValue]="time.value">
+                      {{time.title}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-3"></div>
+            </div>
+            <br>
+            <button (click)="onAddConfirm()" class="btn btn-primary w-100">Send</button>
+            <button class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+</div>
 <nb-card>
   <nb-card-header _ngcontent-c31="">
     <div class="row">
       <div class="col-lg-1">
         <h5>Connections</h5>
       </div>
-      <div class="col-lg-2" style="text-align: left">
-        <ng-template #form>
-          <nb-card>
-            <nb-card-header style="width:100%">
-              Add a new connection(*Required)
-            </nb-card-header>
-            <nb-card-body>
-              <div class="p-4">
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label>Name</label>
-                      <input type="text" class="form-control" [(ngModel)]="connection.name" placeholder="Name">
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label>IP address*</label>
-                      <input type="text" class="form-control" [(ngModel)]="connection.ip" placeholder="IP address">
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label>Latency Threshold (ms)*</label>
-                      <input type="text" class="form-control" [(ngModel)]="connection.latencyThreshold_Value" placeholder="Recipients">
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label>Latency Threshold (time)*</label>
-                      <select type="text" class="form-control" [(ngModel)]="connection.latencyThreshold_pings">
-                        <option *ngFor="let time of timeOptions" [ngValue]="time.value">
-                          {{time.title}}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label>Loss % Threshold (%)*</label>
-                      <input type="text" class="form-control" [(ngModel)]="connection.downTimePercentThreshold_Value" placeholder="Recipients">
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label>Loss % Threshold (time)*</label>
-                      <select type="text" class="form-control" [(ngModel)]="connection.downTimePercentThreshold_pings">
-                        <option *ngFor="let time of timeOptions" [ngValue]="time.value">
-                          {{time.title}}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-3"></div>
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label>Status Threshold (time)*</label>
-                      <select type="text" class="form-control" [(ngModel)]="connection.statusThreshold_count">
-                        <option *ngFor="let time of timeOptions" [ngValue]="time.value">
-                          {{time.title}}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-lg-3"></div>
-                </div>
-                <br>
-                <button (click)="onAddConfirm()" class="btn btn-primary w-100">Send</button>
-              </div>
-            </nb-card-body>
-          </nb-card>
-
-        </ng-template>
-        <button style="background: linear-gradient(to right, #40dcb2, #40dc7e);border:none;border-radius:2px 2px 2px 2px;color: #fff;"
-          [nbPopover]="form" nbPopoverPlacement="bottom">
-          <b>
-            <i class="nb-plus"></i>
-          </b>
-        </button>
-      </div>
       <div class="col-lg-9"></div>
+      <div class="col-lg-2" style="text-align: right">
+        <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#myModal">+</button>
+      </div>
     </div>
   </nb-card-header>
 

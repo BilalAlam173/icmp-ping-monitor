@@ -1,13 +1,16 @@
 import { NgModule } from '@angular/core';
 
 import { PagesComponent } from './pages.component';
-import { DashboardModule } from './dashboard/dashboard.module';
 import { PagesRoutingModule } from './pages-routing.module';
 import { ThemeModule } from '../@theme/theme.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 import { SettingComponent } from './setting/setting.component';
 import { DetailComponent } from './detail/detail.component';
-import { StatusRenderComponent } from './dashboard/dashboard.component';
+import { StatusRenderComponent, DashboardComponent } from './dashboard/dashboard.component';
+import { LoaderComponent } from './loader/loader.component';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { SmartTableService } from '../@core/data/smart-table.service';
+import { EditConnectionFormComponent } from './edit-connection-form/edit-connection-form.component';
 
 
 
@@ -19,16 +22,21 @@ const PAGES_COMPONENTS = [
   imports: [
     PagesRoutingModule,
     ThemeModule,
-    DashboardModule,
-    MiscellaneousModule
+    MiscellaneousModule,
+    Ng2SmartTableModule
   ],
   declarations: [
     ...PAGES_COMPONENTS,
     SettingComponent,
     DetailComponent,
-    StatusRenderComponent
+    StatusRenderComponent,
+    LoaderComponent,
+    DashboardComponent,
+    EditConnectionFormComponent
   ],
-  entryComponents: [StatusRenderComponent]
+  providers:[SmartTableService],
+  bootstrap:[LoaderComponent],
+  entryComponents: [StatusRenderComponent,DashboardComponent]
 })
 export class PagesModule {
 }

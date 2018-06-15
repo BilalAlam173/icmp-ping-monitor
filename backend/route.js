@@ -27,7 +27,7 @@ module.exports = (app)=>{
   app.get('/api/connection', connectionCtrl.getAll);
  
  // update a connection by id
-  app.put('/api/connection/:id', connectionCtrl.update);
+  app.put('/api/connection', connectionCtrl.update);
 
  // delete a connection by id
   app.delete('/api/connection/:id', connectionCtrl.delete);

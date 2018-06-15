@@ -15,7 +15,7 @@ function processCtrl() {
     connectionModel: require('../models/connection'),
     pingHistoryModel: require('../models/pingHistory'),
     settingModel: require('../models/setting'),
-    global:{},
+    global: {},
     globalFlags: require('../config/global'),
     helperFns: require('../config/helper-fns'),
     timer: {},
@@ -28,7 +28,8 @@ function processCtrl() {
     loop: _loop,
     sendAlert: _sendAlert,
     sendPing: _sendPing,
-    getLatestAvgLatency:_getLatestAvgLatency
+    getLatestAvgLatency: _getLatestAvgLatency,
+    filterProperties: _filterProperties
 
   }
 
@@ -55,10 +56,10 @@ function processCtrl() {
     if (_module.connections.length > 0) {
       //ping each connection
       for (var i = 0; i < _module.connections.length; i++) {
-        if(!_module.pingIntervalChanged){
-        _module.sendPing(_module.connections[i]);
-        }else{
-          _module.pingIntervalChanged=false;
+        if (!_module.pingIntervalChanged) {
+          _module.sendPing(_module.connections[i]);
+        } else {
+          _module.pingIntervalChanged = false;
           clearInterval(_module.timer);
           init();
         }
@@ -66,26 +67,26 @@ function processCtrl() {
     }
   }
 
-  async function _getLatestAvgLatency(connection){
+  async function _getLatestAvgLatency(connection) {
     const setting = await _module.settingModel.find({});
-    const time= setting[0].timePeriod*setting[0].pingInterval;
+    const time = setting[0].timePeriod * setting[0].pingInterval;
 
-    const pingHistory = await _module.pingHistoryCtrl.getSimple(connection,time);
-    const n =pingHistory.length;
-    const reducerLT =(averagedLatency,item)=>{
-      for(var key in item){
+    const pingHistory = await _module.pingHistoryCtrl.getSimple(connection, time);
+    const n = pingHistory.length;
+    const reducerLT = (averagedLatency, item) => {
+      for (var key in item) {
         return Number(averagedLatency) + Number(item[key].split('-')[0]);
       }
     }
-    const reducerUT =(averagedDownTime,item)=>{
-      for(var key in item){
+    const reducerUT = (averagedDownTime, item) => {
+      for (var key in item) {
         return Number(averagedLatency) + Number(item[key].split('-')[1]);
       }
     }
-    const sumLT = pingHistory.reduce(reducerLT,0);
-    const sumUT = pingHistory.reduce(reducerDT,0);
-    connection.averagedLatency=Math.floor(sumLT/n);
-    connection.upTimePercent=Math.floor(sumUT/n);
+    const sumLT = pingHistory.reduce(reducerLT, 0);
+    const sumUT = pingHistory.reduce(reducerDT, 0);
+    connection.averagedLatency = Math.floor(sumLT / n);
+    connection.upTimePercent = Math.floor(sumUT / n);
     return connection;
   }
 
@@ -109,16 +110,16 @@ function processCtrl() {
       }
       let settings = await _module.settingModel.find({});
       global = settings[0];
-      if(_module.globalFlags.timePeriodChanged){
-        _module.globalFlags.timePeriodChanged=false;
-        connection = await _module.getLatestAvgLatency(connection); 
+      if (_module.globalFlags.timePeriodChanged) {
+        _module.globalFlags.timePeriodChanged = false;
+        connection = await _module.getLatestAvgLatency(connection);
       }
       let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
 
       connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
 
       let upTime = connection.upTimePercent / 100;
-      connection.upTimePercent = Math.floor(upTime + ((connection.status<=0?0:1 - upTime) / n)) * 100;
+      connection.upTimePercent = Math.floor(upTime + ((connection.status <= 0 ? 0 : 1 - upTime) / n)) * 100;
 
       connection.downTimePercent = 100 - connection.upTimePercent;
 
@@ -132,22 +133,34 @@ function processCtrl() {
         connection.pingHistory.hourlyHistory.push(newHour);
       } else {
         let l = connection.pingHistory.hourlyHistory.length - 1
-        connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`] = latency+'-'+connection.downTimePercent;
+        connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`] = latency + '-' + connection.downTimePercent;
         connection.pingHistory.markModified('hourlyHistory');
 
       }
-      if(settings[0].senders_emailId&&sender_emailPassword&&sender_emailHost&&reciever_emailId){
+      if (settings[0].senders_emailId && sender_emailPassword && sender_emailHost && reciever_emailId) {
         connection = await _module.sendAlert(connection, global);
       }
 
-      if(statusCache !==connection.status && connection.message){
-        const alert = await _module.emailCtrl.alert(connection,connection.message,Boolean(connection.status));
+      if (statusCache !== connection.status && connection.message) {
+        const alert = await _module.emailCtrl.alert(connection, connection.message, Boolean(connection.status));
       }
 
       //update the connection
-      const connectionUpdated = await _module.connectionModel.findByIdAndUpdate(connection._id, connection);
+      const connectionUpdated = await _module.connectionModel.findByIdAndUpdate(connection._id, _module.filterProperties(connection));
       const pingHistoryUpdated = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
     });
+  }
+
+  function _filterProperties(connection) {
+    connection = connection.toObject();
+    delete connection.name;
+    delete connection.ip;
+    delete connection.latencyThreshold_pings;
+    delete connection.latencyThreshold_Value;
+    delete connection.statusThreshold_pings;
+    delete connection.downTimePercentThreshold_pings;
+    delete connection.downTimePercentThreshold_Value;
+    return connection;
   }
 
   async function _sendAlert(connection, global) {
@@ -162,8 +175,8 @@ function processCtrl() {
 
     if (connection.latencyThreshold_count > connection.latencyThreshold_pings) {
       connection.status = 0;
-      connection.message=`The averaged latency is above ${connection.latencyThreshold_Value} for ${connection.latencyThreshold_pings*global.pingInterval}s`
-      
+      connection.message = `The averaged latency is above ${connection.latencyThreshold_Value} for ${connection.latencyThreshold_pings*global.pingInterval}s`
+
     }
 
     //downtime
@@ -175,7 +188,7 @@ function processCtrl() {
 
     if (connection.downTimePercentThreshold_count > connection.downTimePercentThreshold_pings) {
       connection.status = 0;
-      connection.message=`The loss percentage is above ${connection.downTimePercentThreshold_Value}% for ${_module.helperFns.toProperFormat(connection.downTimePercentThreshold_Value*global.pingInterval)}`;
+      connection.message = `The loss percentage is above ${connection.downTimePercentThreshold_Value}% for ${_module.helperFns.toProperFormat(connection.downTimePercentThreshold_Value*global.pingInterval)}`;
     }
     //status
     if (connection.status < 1) {
@@ -185,7 +198,7 @@ function processCtrl() {
     }
 
     if (connection.statusThreshold_count > connection.statusThreshold_pings) {
-      connection.message=`The IP is constantly down for ${connection.statusThreshold_pings*global.pingInterval}s`;
+      connection.message = `The IP is constantly down for ${connection.statusThreshold_pings*global.pingInterval}s`;
     }
     return connection;
   }
