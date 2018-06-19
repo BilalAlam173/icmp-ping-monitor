@@ -146,8 +146,8 @@ function processCtrl() {
       }
 
       //update the connection
-       _module.connectionModel.findByIdAndUpdate(connection._id, _module.filterProperties(connection));
-       _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
+      //  _module.connectionModel.findByIdAndUpdate(connection._id, _module.filterProperties(connection));
+       const updatedPingHistory = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
     });
   }
 
