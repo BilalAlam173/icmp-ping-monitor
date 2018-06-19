@@ -44,7 +44,7 @@ function processCtrl() {
 
   // the main loop
   async function _loop() {
-    console.log('ping initiated after the interval of ' + _module.pingInterval + ' seconds')
+    // console.log('ping initiated after the interval of ' + _module.pingInterval + ' seconds')
 
     let global = require('../config/global');
 
@@ -146,8 +146,8 @@ function processCtrl() {
       }
 
       //update the connection
-      //  _module.connectionModel.findByIdAndUpdate(connection._id, _module.filterProperties(connection));
-       const updatedPingHistory = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
+       const updatedConnection =await _module.connectionModel.findByIdAndUpdate(connection._id, _module.filterProperties(connection));
+      //  const updatedPingHistory = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
     });
   }
 
