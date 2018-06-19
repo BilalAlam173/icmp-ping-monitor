@@ -147,7 +147,7 @@ function processCtrl() {
 
       //update the connection
       // const connectionUpdated = await _module.connectionModel.findByIdAndUpdate(connection._id, _module.filterProperties(connection));
-      // const pingHistoryUpdated = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
+      const pingHistoryUpdated = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
     });
   }
 
