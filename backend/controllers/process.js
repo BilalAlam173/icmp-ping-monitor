@@ -130,6 +130,8 @@ module.exports = async function processCtrl() {
             await _calculateRadical(_connections[i]) :
             await _calculateIncremental(_connections[i]);
 
+            // _emailHandler(_connections[i]);
+
           _imports.connectionCtrl.updateSimple(_connections[i], (err, conn) => {
             if (err)
               console.log(err)
@@ -160,23 +162,23 @@ module.exports = async function processCtrl() {
     });
   }
 
-  async function _sendPing(connection) {
+  async function _emailHandler(connection,settings) {
 
 
-    //   // check if metric values can instigate an email alert
-    //   // if (settings[0].senders_emailId && sender_emailPassword && sender_emailHost && reciever_emailId) {
-    //   //   connection = await _checkForAlert(connection, global);
-    //   // }
+     // check if metric values can instigate an email alert
+     
+     if (settings.senders_emailId && settings.sender_emailPassword && settings.sender_emailHost && settings.reciever_emailId) {
+        connection = await _checkForAlert(connection, settings);
+      }
 
-    //   // // send alert if above check passes
-    //   // if (statusCache !== connection.status && connection.message) {
-    //   //   const alert = await _imports.emailCtrl.alert(connection, connection.message, Boolean(connection.status));
-    //   // }
+      // send alert if above check passes
+      if (statusCache !== connection.status && connection.message) {
+        const alert = await _imports.emailCtrl.alert(connection, connection.message, Boolean(connection.status));
+      }
 
-    //   // //update the connection
-    //   // const connectionUpdated = await _imports.connectionModel.findByIdAndUpdate(connection._id, _filterProperties(connection));
-    //   // const pingHistoryUpdated = await _imports.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
-    // });
+      //update the connection
+      const connectionUpdated = await _imports.connectionModel.findByIdAndUpdate(connection._id, _filterProperties(connection));
+      const pingHistoryUpdated = await _imports.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
   }
 
   _calculateRadical = async (connection) => {
@@ -223,44 +225,6 @@ module.exports = async function processCtrl() {
     connection.upTimePercent = Math.floor(upTime + ((connection.latency >= 1 ? 1 : 0 - upTime) / n)) * 100;
     connection.downTimePercent = 100 - connection.upTimePercent;
 
-    return connection;
-  }
-
-  // function updatePingHistory(connection, latency, downTime) {
-  //   if (connection.secondsRemainingInHour < 1) {
-  //     let newHour = {
-  //       timestamp_hour: new Date(),
-  //       pings: [{
-  //         second: 0,
-  //         connections: [{
-  //           id: connection._id,
-  //           latency,
-  //           downTime,
-  //         }]
-  //       }],
-  //     }
-  //     _imports.pingHistoryCtrl.insert(newHour);
-  //     _connections.forEach((item, index) => {
-  //       _connections[index].secondsRemainingInHour = 3600;
-  //     });
-  //   } else {
-  //     let l = connection.pingHistory.hourlyHistory.length - 1
-  //     connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`] = latency + '-' + connection.downTimePercent;
-  //     connection.pingHistory.markModified('hourlyHistory');
-
-  //   }
-  // }
-
-
-  _filterProperties = (connection) => {
-    connection = connection.toObject();
-    delete connection.name;
-    delete connection.ip;
-    delete connection.latencyThreshold_pings;
-    delete connection.latencyThreshold_Value;
-    delete connection.statusThreshold_pings;
-    delete connection.downTimePercentThreshold_pings;
-    delete connection.downTimePercentThreshold_Value;
     return connection;
   }
 

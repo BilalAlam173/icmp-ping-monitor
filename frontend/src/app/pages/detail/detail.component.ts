@@ -24,14 +24,7 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
     ['Time', 'downTime']
   ];
   timeFilter = [];
-  options = {
-    "filters": [
-      {
-        "type": "timeFilter",
-        "value": "10",
-        "unit": "m"
-      }]
-  }
+  timePeriod=600;
 
 
   constructor(private _detailService: DetailService, private route: ActivatedRoute,private _connectionService:SmartTableService) { }
@@ -58,7 +51,7 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
 
   getData() {
     return new Promise(resolve => {
-      this._detailService.getData(this.id, this.options).subscribe((res: Array<any>) => {
+      this._detailService.getData(this.id, this.timePeriod).subscribe((res: Array<any>) => {
         this.data = [
           [{ label: 'Time', type: 'date' }, { label: 'Latency', type: 'number' }]
         ];
@@ -66,16 +59,18 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
           [{ label: 'Time', type: 'date' }, { label: 'Loss %', type: 'number' }]
         ];
         for (var i = 0; i < res.length; i++) {
-          let item = [];
-          let itemDT = []
-          let time = new Date(Object.keys(res[i])[0])
-          let value = String(res[i][Object.keys(res[i])[0]]).split('-');
-          item.push(time);
-          item.push(Number(value[0]));
-          itemDT.push(time);
-          itemDT.push(Number(value[1]));
-          this.data.push(item);
-          this.dataDT.push(itemDT);
+
+          let latency = [];
+          let dt=[];
+          let time = new Date(res[i].time);
+          latency.push(time);
+          dt.push(time);
+          latency.push(res[i].latency)
+          dt.push(res[i].downTime);
+          
+          this.data.push(latency);
+          this.dataDT.push(dt);
+
           resolve();
         }
       }, (err) => {
@@ -127,12 +122,7 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
   onChange(value) {
     this.paused=false;
     let obj = this.timeFilter[value];
-    this.options.filters = [
-      {
-        "type": "timeFilter",
-        "value": obj.value,
-        "unit": obj.unit
-      }];
+    this.timePeriod=obj.seconds;
 
     this.loadChart();
   }

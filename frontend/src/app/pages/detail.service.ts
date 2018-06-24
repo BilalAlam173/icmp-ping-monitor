@@ -55,8 +55,8 @@ export class DetailService {
 
   constructor(private _http: HttpClient, private _global: global) { }
 
-  getData(url, options) {
-    return this._http.post(`${this._global.url}pingHistory/${url}`, { options: options });
+  getData(url, timePeriod) {
+    return this._http.post(`${this._global.url}pingHistory/${url}`, { timePeriod });
   }
 
   toPings(time, unit,pingInterval) {
