@@ -12,6 +12,7 @@ const settingSchema = new Schema({
     timePeriod:{ type: Number, default: 720 },
     username:String,
     password:String,
+    secondsInHour:{ type: Number, default: 3700 },
 });
 
 module.exports = mongoose.model('Setting', settingSchema);

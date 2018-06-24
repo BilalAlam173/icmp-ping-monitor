@@ -7,7 +7,9 @@ module.exports = {
 
     insert: async (req, res) => {
 
-        const existingConnection = await connetionModel.findOne({ip: req.body.ip});
+        const existingConnection = await connetionModel.findOne({
+            ip: req.body.ip
+        });
         if (existingConnection) {
             res.status(500).json({
                 message: 'The IP address already exists'
@@ -27,38 +29,25 @@ module.exports = {
             downTimePercentThreshold_Value: req.body.downTimePercentThreshold_Value,
             downTimePercentThreshold_pings: req.body.downTimePercentThreshold_pings,
         });
-        const pingHistory = new pingHistoryModel({
-            connection: connection._id
-        });
-
-        pingHistory.save((err, pingHistory) => {
+        connection.save((err, connection) => {
             if (err) {
+                // return error
                 res.status(500).json({
                     message: "something went wrong"
                 });
             } else {
-                //alert every component that a new connection has been added
-                connection.pingHistory=pingHistory._id
-                connection.save((err, connection) => {
-                    if (err) {
-                        // return error
-                        res.status(500).json({
-                            message: "something went wrong"
-                        });
-                    } else {
-                        // return success
-                        global.isNewConnectionAdded = true;
-                        res.send(connection);
-                    }
-                });
+                // return success
+                global.isNewConnectionAdded = true;
+                res.send(connection);
             }
         });
-
         // call save funtion on that model's instance
 
     },
     get: (req, res) => {
-        connetionModel.findOne({_id:req.params.id}, function (err, doc) {
+        connetionModel.findOne({
+            _id: req.params.id
+        }, function (err, doc) {
             if (!err) {
                 res.send(doc);
             } else {
@@ -76,24 +65,26 @@ module.exports = {
         });
     },
     update: (req, res) => {
-        if(!req.body._id){
+        if (!req.body._id) {
             return res
-            .status(500)
-            .send({
-                error: "Invalid ID in request paramaters"
-            })
+                .status(500)
+                .send({
+                    error: "Invalid ID in request paramaters"
+                })
         }
         let connection = JSON.parse(JSON.stringify(req.body));
         delete connection._id;
         delete connection.__v;
-        connetionModel.findByIdAndUpdate(req.body._id, connection, {new: true}, (err, connection) => {
+        connetionModel.findByIdAndUpdate(req.body._id, connection, {
+            new: true
+        }, (err, connection) => {
             if (err) {
                 return res
                     .status(500)
                     .send({
                         error: "something went wrong"
                     })
-            }else{
+            } else {
                 res.send({
                     connection: connection
                 });
@@ -101,17 +92,23 @@ module.exports = {
         });
     },
     delete: async (req, res) => {
-        const connection = await connetionModel.findOne({_id:req.params.id});
-        pingHistoryModel.remove({_id:connection.pingHistory},function(err){
-            if(err){
+        const connection = await connetionModel.findOne({
+            _id: req.params.id
+        });
+        pingHistoryModel.remove({
+            _id: connection.pingHistory
+        }, function (err) {
+            if (err) {
                 res.sendStatus(500);
-            }else{
+            } else {
                 connetionModel.remove({
                     _id: req.params.id
                 }, function (err) {
                     if (!err) {
                         global.isNewConnectionAdded = true;
-                        res.send({id:req.params.id});
+                        res.send({
+                            id: req.params.id
+                        });
                     } else {
                         res.sendStatus(500);
                     }
@@ -119,6 +116,6 @@ module.exports = {
             }
 
         });
-        
+
     }
 }

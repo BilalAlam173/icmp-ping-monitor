@@ -45,6 +45,32 @@ module.exports = {
             res.json(Array.prototype.concat.apply([], data));
         }
     },
+
+    getLastHour:async ()=>{
+     const lastHour = await pingHistoryModel.findOne().sort({ field: 'asc', _id: -1 }).limit(1);
+     return lastHour; 
+    },
+    upsert:async (hourObj)=>{
+        if(hourObj._id){
+            let update = await pingHistoryModel.updateOne({_id:hourObj._id},hourObj);
+            return update;
+        }else{
+            let hour = new pingHistoryModel(hourObj);
+            hour.save((err,hour)=>{
+                return hour;
+            });
+        }
+    },
+    getRecentHistory:async (connectionId,timePeriod,secodsInHour)=>{
+        let timeLeft = timePeriod;
+        let count=0;
+        while(timeLeft>0){
+            timeLeft-=secodsInHour;
+            count++;
+            secodsInHour=3600;
+        }
+        return await pingHistoryModel.find({},{},{sort: {'_id': -1}}).limit(count);
+    },
     getSimple: async (connection,timeFilter) => {
         
 

@@ -45,18 +45,10 @@ module.exports = {
         }
     },
     update: async (req, res) => {
-        const doc = await settingsModel.find({});
-        let timePeriod = req.body.timePeriod ? 
-        helperFns.toSeconds(req.body.timePeriod.value,req.body.timePeriod.unit)/doc:timePeriod;
-        const oldSettings = await settingsModel.find({});
-        if(oldSettings[0].pingInterval!==req.body.pingInterval){
-            global.pingIntervalChanged=true;
-        }
-        if(oldSettings[0].timePeriod!==req.body.timePeriod){
-            global.timePeriodChanged=true;
-        }
-
-        const settings = new settingsModel({
+        let temp = await settingsModel.find({});
+        const doc = temp[0];
+        let timePeriod =req.body.timePeriod?helperFns.toSeconds(req.body.timePeriod.value,req.body.timePeriod.unit):doc.timePeriod;
+        const settings = {
             sender_emailId: req.body.sender_emailId?req.body.sender_emailId:doc.sender_emailId,
             sender_emailPassword: req.body.sender_emailPassword?req.body.sender_emailPassword:doc.sender_emailPassword,
             sender_emailHost: req.body.sender_emailHost?req.body.sender_emailHost:doc.sender_emailHost,
@@ -66,10 +58,16 @@ module.exports = {
             timePeriod:timePeriod,
             username: req.body.username?req.body.username:doc.username,
             password: req.body.password?req.body.password:doc.password
-        });
-        settingsModel.findByIdAndUpdate(doc[0]._id,req.body, (err, doc) => {
+        };
+        if(doc.pingInterval!==req.body.pingInterval){
+            global.pingIntervalChanged=true;
+        }
+        if(doc.timePeriod!==timePeriod){
+            global.timePeriodChanged=true;
+        }
+        settingsModel.findByIdAndUpdate(doc._id,settings, (err, doc) => {
             if (err) {
-                res.sendStatus(500);
+                res.status(500).send(err);
             } else {
                 res.send(doc);
             }

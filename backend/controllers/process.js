@@ -7,6 +7,9 @@ n=total pings to count average for
 @formula:latest avg value = a+(l-a)/n
 */
 function processCtrl() {
+  var imports = {
+
+  }
   var _module = {
     netPing: require('net-ping'),
     connectionCtrl: require('./connection'),
@@ -15,7 +18,7 @@ function processCtrl() {
     connectionModel: require('../models/connection'),
     pingHistoryModel: require('../models/pingHistory'),
     settingModel: require('../models/setting'),
-    global: {},
+    settings: {},
     globalFlags: require('../config/global'),
     helperFns: require('../config/helper-fns'),
     timer: {},
@@ -26,53 +29,144 @@ function processCtrl() {
     pingHistories: [],
     netPingSession: {},
     loop: _loop,
-    sendAlert: _sendAlert,
+    checkForAlert: _checkForAlert,
     sendPing: _sendPing,
-    getLatestAvgLatency: _getLatestAvgLatency,
+    calculateRadical: _calculateRadical,
     filterProperties: _filterProperties
 
   }
 
   //constructor function
   async function init() {
-    _module.global = await _module.settingModel.find({});
-    _module.pingsPerHour = (60 * 60) / _module.global[0].pingInterval;
+
+    //calculate how many pings an hour will hold in the system
+    // _module.pingsPerHour = (60 * 60) / _module.global[0].pingInterval;
+
+    //creates net ping session
     _module.netPingSession = _module.netPing.createSession();
+
+    // initialize the main loop
     _module.timer = setInterval(_module.loop, _module.pingInterval * 1000);
   }
   return init;
 
   // the main loop
   async function _loop() {
+
     console.log('ping initiated after the interval of ' + _module.pingInterval + ' seconds')
 
-    let global = require('../config/global');
+    // import the globals and settings
+    _module.globalFlags = require('../config/global');
+    let temp = await _module.settingModel.find({});
+    _module.settings = temp[0];
+    _module.settings.secondsInHour += _module.settings.pingInterval;
 
-    if (global.isNewConnectionAdded || _module.connections.length < 1) {
+    // if a new connection is added in the system, fetches the connections collection again
+    if (_module.globalFlags.isNewConnectionAdded) {
       _module.connections = await _module.connectionModel.find({}).populate('pingHistory');
-      _module.pingHistories = await _module.pingHistoryModel.find({});
-      global.isNewConnectionAdded = false;
+      _module.globalFlags.isNewConnectionAdded = false;
     }
+
+    // re initialize the loop if a change in pingInterval is detected
     if (_module.connections.length > 0) {
-      //ping each connection
-      for (var i = 0; i < _module.connections.length; i++) {
-        if (!_module.pingIntervalChanged) {
-          _module.sendPing(_module.connections[i]);
-        } else {
-          _module.pingIntervalChanged = false;
-          clearInterval(_module.timer);
-          init();
-        }
+      if (_module.globalFlags.pingIntervalChanged) {
+        _module.pingIntervalChanged = false;
+        clearInterval(_module.timer);
+        init();
+      } else {
+        traverseConnections();
       }
     }
   }
 
-  async function _getLatestAvgLatency(connection) {
-    const setting = await _module.settingModel.find({});
-    const time = setting[0].timePeriod * setting[0].pingInterval;
+  async function traverseConnections() {
+    // create new hour object if current hour object has completely elapsed else get current hour object
+    let hour = {};
+    if (_module.settings.secondsInHour > (3600 - _module.pingInterval)) {
+      hour = {
+        timestamp_hour: new Date(),
+        pings: [],
+      }
+      _module.settings.secondsInHour = 0;
+    } else {
+      hour = await _module.pingHistoryCtrl.getLastHour();
+    }
 
-    const pingHistory = await _module.pingHistoryCtrl.getSimple(connection, time);
+    let ping = {
+      second: _module.settings.secondsInHour,
+      connections: [],
+    }
+    let promises = [];
+    for (let i = 0; i < _module.connections.length; i++) {
+      let promise = new Promise((resolve, reject) => {
+        _module.netPingSession.pingHost(_module.connections[i].ip, function (error, target, sent, rcvd) {
+          _module.connections[i].latency = rcvd - sent;
+          ping.connections.push({
+            id: _module.connections[i]._id,
+            latency: _module.connections[i].latency || 200,
+            downTime: _module.connections[i].downTimePercent || 0,
+          });
+          resolve();
+          // let connection = pingResponseHandler(_module.connections[i], error, rcvd - sent);
+        });
+      });
+      promises.push(promise);
+      // _module.calculateRadical(connection)
+    }
+    Promise.all(promises).then(async ()=>{
+      hour.pings.push(ping);
+      _module.pingHistoryCtrl.upsert(hour);
+      const settingsUpdated = await _module.settingModel.updateOne({_id:_module.settings._id},_module.settings);
+    });
+
+    // If a change in average time period is detected, re-calculate the metrics radically with the new time period otherwise calculate incrementally
+    // connection = _module.globalFlags.timePeriodChanged ?
+    // await _module.calculateRadical(connection) :
+    // await calculateIncremental(connection, latency);
+  }
+
+  function pingResponseHandler(connection, error, latency) {
+    // updates total pings counter
+    connection.pingCount++;
+
+    connection.latency = error ? 0 : latency;
+    connection.status = error ? connection.status : 1;
+    // _module.calculateRadical(connection);
+    return connection;
+
+    // return _module.globalFlags.timePeriodChanged ?
+    //   await _module.calculateRadical(connection) :
+    //   await calculateIncremental(connection, latency);
+  }
+
+  async function _sendPing(connection) {
+
+
+    //   // check if metric values can instigate an email alert
+    //   // if (settings[0].senders_emailId && sender_emailPassword && sender_emailHost && reciever_emailId) {
+    //   //   connection = await _module.checkForAlert(connection, global);
+    //   // }
+
+    //   // // send alert if above check passes
+    //   // if (statusCache !== connection.status && connection.message) {
+    //   //   const alert = await _module.emailCtrl.alert(connection, connection.message, Boolean(connection.status));
+    //   // }
+
+    //   // //update the connection
+    //   // const connectionUpdated = await _module.connectionModel.findByIdAndUpdate(connection._id, _module.filterProperties(connection));
+    //   // const pingHistoryUpdated = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
+    // });
+  }
+
+  async function _calculateRadical(connection) {
+    _module.globalFlags.timePeriodChanged = false;
+
+    // gets only the relevant hours according to the selected time period
+    const pingHistory = await _module.pingHistoryCtrl.getRecentHistory(connection._id, _module.settings.timePeriod, _module.settings.secondsInHour);
     const n = pingHistory.length;
+    if (n) {
+
+    }
     const reducerLT = (averagedLatency, item) => {
       for (var key in item) {
         return Number(averagedLatency) + Number(item[key].split('-')[0]);
@@ -90,66 +184,43 @@ function processCtrl() {
     return connection;
   }
 
-  async function _sendPing(connection) {
-    let currentTimeStamp = new Date();
+  function calculateIncremental(connection, latency) {
+    let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
 
-    let global = require('../config/global');
+    connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
 
-    _module.netPingSession.pingHost(connection.ip, async function (error, target, sent, rcvd) {
-      connection.pingCount++;
-      const statusCache = connection.status;
-      connection.pingsPerHour = connection.pingsPerHour < _module.pingsPerHour ? connection.pingsPerHour + 1 : 0;
-      var latency = 0;
-      if (error) {
-        //pingfails
+    let upTime = connection.upTimePercent / 100;
+    connection.upTimePercent = Math.floor(upTime + ((connection.status <= 0 ? 0 : 1 - upTime) / n)) * 100;
 
-      } else {
-        latency = rcvd - sent;
-        connection.status = 1;
-
-      }
-      let settings = await _module.settingModel.find({});
-      global = settings[0];
-      if (_module.globalFlags.timePeriodChanged) {
-        _module.globalFlags.timePeriodChanged = false;
-        connection = await _module.getLatestAvgLatency(connection);
-      }
-      let n = connection.pingCount < global.timePeriod ? connection.pingCount : global.timePeriod;
-
-      connection.averagedLatency = Math.floor(connection.averagedLatency + ((latency - connection.averagedLatency) / n));
-
-      let upTime = connection.upTimePercent / 100;
-      connection.upTimePercent = Math.floor(upTime + ((connection.status <= 0 ? 0 : 1 - upTime) / n)) * 100;
-
-      connection.downTimePercent = 100 - connection.upTimePercent;
-
-      if (!connection.pingsPerHour || global.pingIntervalChanged) {
-        let newHour = {
-          timestamp_hour: currentTimeStamp,
-          interval: global.pingInterval,
-          values: {},
-        }
-        newHour.values[`${connection.pingsPerHour*global.pingInterval}`] = latency;
-        connection.pingHistory.hourlyHistory.push(newHour);
-      } else {
-        let l = connection.pingHistory.hourlyHistory.length - 1
-        connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`] = latency + '-' + connection.downTimePercent;
-        connection.pingHistory.markModified('hourlyHistory');
-
-      }
-      if (settings[0].senders_emailId && sender_emailPassword && sender_emailHost && reciever_emailId) {
-        connection = await _module.sendAlert(connection, global);
-      }
-
-      if (statusCache !== connection.status && connection.message) {
-        const alert = await _module.emailCtrl.alert(connection, connection.message, Boolean(connection.status));
-      }
-
-      //update the connection
-      const connectionUpdated = await _module.connectionModel.findByIdAndUpdate(connection._id, _module.filterProperties(connection));
-      const pingHistoryUpdated = await _module.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
-    });
+    connection.downTimePercent = 100 - connection.upTimePercent;
+    return connection;
   }
+
+  function updatePingHistory(connection, latency, downTime) {
+    if (connection.secondsRemainingInHour < 1) {
+      let newHour = {
+        timestamp_hour: new Date(),
+        pings: [{
+          second: 0,
+          connections: [{
+            id: connection._id,
+            latency,
+            downTime,
+          }]
+        }],
+      }
+      _module.pingHistoryCtrl.insert(newHour);
+      _module.connections.forEach((item, index) => {
+        _module.connections[index].secondsRemainingInHour = 3600;
+      });
+    } else {
+      let l = connection.pingHistory.hourlyHistory.length - 1
+      connection.pingHistory.hourlyHistory[l].values[`${connection.pingsPerHour*global.pingInterval}`] = latency + '-' + connection.downTimePercent;
+      connection.pingHistory.markModified('hourlyHistory');
+
+    }
+  }
+
 
   function _filterProperties(connection) {
     connection = connection.toObject();
@@ -163,7 +234,7 @@ function processCtrl() {
     return connection;
   }
 
-  async function _sendAlert(connection, global) {
+  async function _checkForAlert(connection, global) {
 
 
     //latency

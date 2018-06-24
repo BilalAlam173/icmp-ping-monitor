@@ -19,7 +19,7 @@ const connectionSchema = new Schema({
     downTimePercentThreshold_count:{type:Number,default:0},//no of pings
     pingCount:{type:Number,default:0},
     pingHistory:{type: mongoose.Schema.Types.ObjectId, ref: 'PingHistory'},
-    pingsPerHour:{type:Number,default:-1},
+    secondsRemainingInHour:{type:Number,default:3600},
 });
 
 module.exports = mongoose.model('Connection', connectionSchema);
