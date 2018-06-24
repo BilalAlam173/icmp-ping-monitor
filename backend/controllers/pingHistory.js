@@ -1,83 +1,161 @@
 const pingHistoryModel = require('../models/pingHistory');
+const settingsModel = require('../models/setting');
 connectionModel = require('../models/connection');
 const helperFns = require('../config/helper-fns');
 
 module.exports = {
 
-    get: async (req, res) => {
-        let options = req.body.options;
-        let filters = options && options.filters ? options.filters : null;
-        let timeFilter;
+    // get: async (req, res) => {
+    //     let options = req.body.options;
+    //     let filters = options && options.filters ? options.filters : null;
+    //     let timeFilter;
 
-        if (Array.isArray(filters) && filters.length > 0) {
-            for (var i = 0; i < filters.length; i++) {
-                switch (filters[i].type) {
-                    case 'timeFilter':
-                        timeFilter = helperFns.toSeconds(filters[i].value,filters[i].unit);
-                        break;
+    //     if (Array.isArray(filters) && filters.length > 0) {
+    //         for (var i = 0; i < filters.length; i++) {
+    //             switch (filters[i].type) {
+    //                 case 'timeFilter':
+    //                     timeFilter = helperFns.toSeconds(filters[i].value, filters[i].unit);
+    //                     break;
 
-                }
-            }
-        } else {
-            timeFilter = 3600;
-        }
+    //             }
+    //         }
+    //     } else {
+    //         timeFilter = 3600;
+    //     }
 
-        let pingHistory = await connectionModel.findOne({
-            _id: req.params.id
-        }).populate('pingHistory');
-        pingHistory=pingHistory.pingHistory;
+    //     let pingHistory = await connectionModel.findOne({
+    //         _id: req.params.id
+    //     }).populate('pingHistory');
+    //     pingHistory = pingHistory.pingHistory;
 
-        if (pingHistory.hourlyHistory.length) {
-            let l = pingHistory.hourlyHistory.length - 1;
-            var data = [];
-            for (var i = l; i >= 0; i--) {
-                let hourObj = pingHistory.hourlyHistory[i];
-                timeElapsed = Object.keys(hourObj.values).length * hourObj.interval;
-                let timeLeft = timeElapsed - timeFilter;
-                if (timeLeft > 0) {
-                    data.unshift(helperFns.getHistory(hourObj, timeFilter / hourObj.interval));
-                    break;
-                } else {
-                    data.unshift(helperFns.getHistory(hourObj, timeElapsed / hourObj.interval));
-                    timeFilter -= timeElapsed;
-                }   
-            }
-            res.json(Array.prototype.concat.apply([], data));
-        }
+    //     if (pingHistory.hourlyHistory.length) {
+    //         let l = pingHistory.hourlyHistory.length - 1;
+    //         var data = [];
+    //         for (var i = l; i >= 0; i--) {
+    //             let hourObj = pingHistory.hourlyHistory[i];
+    //             timeElapsed = Object.keys(hourObj.values).length * hourObj.interval;
+    //             let timeLeft = timeElapsed - timeFilter;
+    //             if (timeLeft > 0) {
+    //                 data.unshift(helperFns.getHistory(hourObj, timeFilter / hourObj.interval));
+    //                 break;
+    //             } else {
+    //                 data.unshift(helperFns.getHistory(hourObj, timeElapsed / hourObj.interval));
+    //                 timeFilter -= timeElapsed;
+    //             }
+    //         }
+    //         res.json(Array.prototype.concat.apply([], data));
+    //     }
+    // },
+
+    getLastHour: async () => {
+        const lastHour = await pingHistoryModel.findOne().sort({
+            field: 'asc',
+            _id: -1
+        }).limit(1);
+        return lastHour;
     },
-
-    getLastHour:async ()=>{
-     const lastHour = await pingHistoryModel.findOne().sort({ field: 'asc', _id: -1 }).limit(1);
-     return lastHour; 
-    },
-    upsert:async (hourObj)=>{
-        if(hourObj._id){
-            let update = await pingHistoryModel.updateOne({_id:hourObj._id},hourObj);
+    upsert: async (hourObj) => {
+        if (hourObj._id) {
+            let update = await pingHistoryModel.updateOne({
+                _id: hourObj._id
+            }, hourObj);
             return update;
-        }else{
+        } else {
             let hour = new pingHistoryModel(hourObj);
-            hour.save((err,hour)=>{
-                return hour;
+            hour.save((err, hour) => {
+                if (!err)
+                    return hour;
+                else
+                    return null;
             });
         }
     },
-    getRecentHistory:async (connectionId,timePeriod,secodsInHour)=>{
-        let timeLeft = timePeriod;
-        let count=0;
-        while(timeLeft>0){
-            timeLeft-=secodsInHour;
+    get: async (req, res) => {
+        let timeLeft = req.body.timePeriod;
+        let settings = await settingsModel.findOne().sort({
+            field: 'asc',
+            _id: 1
+        }).limit(1);
+        let id = req.params.id;
+        let secondsInHour = settings.secondsInHour;
+        let lastLeft = timeLeft;
+        let count = 0;
+        while (timeLeft > 0) {
+            lastLeft = timeLeft;
+            timeLeft -= secondsInHour;
             count++;
-            secodsInHour=3600;
+            secondsInHour = 3600;
         }
-        return await pingHistoryModel.find({},{},{sort: {'_id': -1}}).limit(count);
+        const totalHours = await pingHistoryModel.find({}, {}, {
+            sort: {
+                '_id': -1
+            }
+        }).limit(count).lean();
+
+        let lastHour = totalHours[totalHours.length - 1];
+
+        let n = lastHour.pings.length;
+
+        lastLeft /= settings.pingInterval;
+
+        let required = n - lastLeft
+
+        lastHour.pings = lastHour.pings.slice(required - 1, n - 1)
+        totalHours[totalHours.length - 1] = lastHour;
+
+
+        let totalPings = totalHours.reduce((accumulator, x) => {
+            let pings=x.pings.map((ping)=>{
+                let t = new Date(x.timestamp_hour);
+                t.setSeconds(t.getSeconds()+ping.second);
+                ping.second=t;
+                return ping;
+            });
+                return accumulator.concat(pings.reverse())
+            }, [])
+            .map((x) => {
+                let obj = x.connections.find((item) => item.id == id)
+                obj.time=x.second;
+                return obj;
+            });
+        res.json(totalPings);
+
     },
-    getSimple: async (connection,timeFilter) => {
-        
+    getRecentHistory: async (timePeriod, secondsInHour, pingInterval) => {
+        let timeLeft = timePeriod;
+        let lastLeft = timeLeft;
+        let count = 0;
+        while (timeLeft > 0) {
+            lastLeft = timeLeft;
+            timeLeft -= secondsInHour;
+            count++;
+            secondsInHour = 3600;
+        }
+        const totalHours = await pingHistoryModel.find({}, {}, {
+            sort: {
+                '_id': -1
+            }
+        }).limit(count);
+
+        let lastHour = totalHours[totalHours.length - 1];
+
+        let n = lastHour.pings.length;
+
+        lastLeft /= pingInterval;
+
+        let required = n - lastLeft
+
+        lastHour.pings = lastHour.pings.slice(required - 1, n - 1)
+        totalHours[totalHours.length - 1] = lastHour;
+        return totalHours;
+    },
+    getSimple: async (connection, timeFilter) => {
+
 
         let pingHistory = await connectionModel.findOne({
             _id: connection._id
         }).populate('pingHistory');
-        pingHistory=pingHistory.pingHistory;
+        pingHistory = pingHistory.pingHistory;
 
         if (pingHistory.hourlyHistory.length) {
             let l = pingHistory.hourlyHistory.length - 1;
@@ -92,7 +170,7 @@ module.exports = {
                 } else {
                     data.unshift(helperFns.getHistory(hourObj.values, timeElapsed / hourObj.interval));
                     timeFilter -= timeElapsed;
-                }   
+                }
             }
             return Array.prototype.concat.apply([], data);
         }

@@ -91,6 +91,33 @@ module.exports = {
             }
         });
     },
+    updateSimple: (con, callback) => {
+        if (!con._id) {
+            if (callback)
+                callback(err, null);
+            else
+                return null
+        }
+        let connection = JSON.parse(JSON.stringify(con));
+        delete connection._id;
+        delete connection.__v;
+        connetionModel.findByIdAndUpdate(con._id, connection, {
+            new: true
+        }, (err, connection) => {
+            if (err) {
+                if (callback)
+                    callback(err, null);
+                else
+                    return null
+
+            } else {
+                if (callback)
+                    callback(null, connection);
+                else
+                    return connection
+            }
+        });
+    },
     delete: async (req, res) => {
         const connection = await connetionModel.findOne({
             _id: req.params.id
