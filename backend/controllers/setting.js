@@ -16,6 +16,13 @@ module.exports = {
         });
 
     },
+    truncate: async (req, res) => {
+        settingsModel.remove({},function(err){
+            if(!err){
+                res.json({message:'success'});
+            }
+        });
+    },
     insert: (req, res) => {
         const settings = new settingsModel({
             sender_emailId: req.body.sender_emailId,

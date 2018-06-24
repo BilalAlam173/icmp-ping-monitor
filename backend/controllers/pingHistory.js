@@ -29,58 +29,73 @@ module.exports = {
             });
         }
     },
-    get: async (req, res) => {
-        let timeLeft = req.body.timePeriod;
-        let settings = await settingsModel.findOne().sort({
-            field: 'asc',
-            _id: 1
-        }).limit(1);
-        let id = req.params.id;
-        let secondsInHour = settings.secondsInHour;
-        let lastLeft = timeLeft;
-        let count = 0;
-        while (timeLeft > 0) {
-            lastLeft = timeLeft;
-            timeLeft -= secondsInHour;
-            count++;
-            secondsInHour = 3600;
-        }
-        const totalHours = await pingHistoryModel.find({}, {}, {
-            sort: {
-                '_id': -1
-            }
-        }).limit(count).lean();
-
-        if (totalHours.length == count) {
-
-            let lastHour = totalHours[totalHours.length - 1];
-
-            let n = lastHour.pings.length;
-
-            lastLeft /= settings.pingInterval;
-
-            let required = n - lastLeft
-
-            lastHour.pings = lastHour.pings.slice(required - 1, n - 1)
-            totalHours[totalHours.length - 1] = lastHour;
-        }
-
-
-        let totalPings = totalHours.reduce((accumulator, x) => {
-                let pings = x.pings.map((ping) => {
-                    let t = new Date(x.timestamp_hour);
-                    t.setSeconds(t.getSeconds() + ping.second);
-                    ping.second = t;
-                    return ping;
+    truncate: async (req, res) => {
+        pingHistoryModel.remove({}, function (err) {
+            if (!err) {
+                res.json({
+                    message: 'success'
                 });
-                return accumulator.concat(pings.reverse())
-            }, [])
-            .map((x) => {
-                let obj = x.connections.find((item) => item.id == id)
-                obj.time = x.second;
-                return obj;
-            });
-        res.json(totalPings);
+            }
+        });
+    },
+    get: async (req, res) => {
+        try {
+            let timeLeft = req.body.timePeriod;
+            let settings = await settingsModel.findOne().sort({
+                field: 'asc',
+                _id: 1
+            }).limit(1);
+            let id = req.params.id;
+            let secondsInHour = settings.secondsInHour;
+            let lastLeft = timeLeft;
+            let count = 0;
+            while (timeLeft > 0) {
+                lastLeft = timeLeft;
+                timeLeft -= secondsInHour;
+                count++;
+                secondsInHour = 3600;
+            }
+            const totalHours = await pingHistoryModel.find({}, {}, {
+                sort: {
+                    '_id': -1
+                }
+            }).limit(count).lean();
+
+            if (totalHours.length == count) {
+
+
+                let lastHour = totalHours[totalHours.length - 1];
+
+                let n = lastHour.pings.length;
+
+                lastLeft /= settings.pingInterval;
+
+                let required = n - lastLeft
+
+                lastHour.pings = lastHour.pings.slice(required - 1, n - 1)
+                totalHours[totalHours.length - 1] = lastHour;
+            }
+
+
+            let totalPings = totalHours.reduce((accumulator, x) => {
+                    let pings = x.pings.map((ping) => {
+                        let t = new Date(x.timestamp_hour);
+                        t.setSeconds(t.getSeconds() + ping.second);
+                        ping.second = t;
+                        return ping;
+                    });
+                    return accumulator.concat(pings.reverse())
+                }, [])
+                .map((x) => {
+                    let obj = x.connections.find((item) => item.id == id)
+                    obj.time = x.second;
+                    return obj;
+                });
+            res.json(totalPings);
+        }
+        catch(err){
+            res.send(500).json({err});
+        }
 
     },
     getRecentHistory: async (timePeriod, secondsInHour, pingInterval) => {
