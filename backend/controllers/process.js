@@ -73,6 +73,17 @@ module.exports = async function processCtrl() {
       }
     }
   }
+  _filterProperties = (connection) => {
+    connnection = connection.toObject();
+    delete connection.name;
+    delete connection.ip;
+    delete connection.latencyThreshold_pings;
+    delete connection.latencyThreshold_Value;
+    delete connection.statusThreshold_pings;
+    delete connection.downTimePercentThreshold_pings;
+    delete connection.downTimePercentThreshold_Value;
+    return connection;
+  }
 
   _traverseConnections = async () => {
     // create new hour object if current hour object has completely elapsed otherwise get current hour object
@@ -130,9 +141,10 @@ module.exports = async function processCtrl() {
             await _calculateRadical(_connections[i]) :
             await _calculateIncremental(_connections[i]);
 
-            // _emailHandler(_connections[i]);
+          // _emailHandler(_connections[i]);
+          let connection = _filterProperties(_connections[i]);
 
-          _imports.connectionCtrl.updateSimple(_connections[i], (err, conn) => {
+          _imports.connectionCtrl.updateSimple(connection, (err, conn) => {
             if (err)
               console.log(err)
           });
@@ -162,23 +174,23 @@ module.exports = async function processCtrl() {
     });
   }
 
-  async function _emailHandler(connection,settings) {
+  async function _emailHandler(connection, settings) {
 
 
-     // check if metric values can instigate an email alert
-     
-     if (settings.senders_emailId && settings.sender_emailPassword && settings.sender_emailHost && settings.reciever_emailId) {
-        connection = await _checkForAlert(connection, settings);
-      }
+    // check if metric values can instigate an email alert
 
-      // send alert if above check passes
-      if (statusCache !== connection.status && connection.message) {
-        const alert = await _imports.emailCtrl.alert(connection, connection.message, Boolean(connection.status));
-      }
+    if (settings.senders_emailId && settings.sender_emailPassword && settings.sender_emailHost && settings.reciever_emailId) {
+      connection = await _checkForAlert(connection, settings);
+    }
 
-      //update the connection
-      const connectionUpdated = await _imports.connectionModel.findByIdAndUpdate(connection._id, _filterProperties(connection));
-      const pingHistoryUpdated = await _imports.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
+    // send alert if above check passes
+    if (statusCache !== connection.status && connection.message) {
+      const alert = await _imports.emailCtrl.alert(connection, connection.message, Boolean(connection.status));
+    }
+
+    //update the connection
+    const connectionUpdated = await _imports.connectionModel.findByIdAndUpdate(connection._id, _filterProperties(connection));
+    const pingHistoryUpdated = await _imports.pingHistoryModel.findByIdAndUpdate(connection.pingHistory.id, connection.pingHistory._doc);
   }
 
   _calculateRadical = async (connection) => {

@@ -10612,7 +10612,7 @@ if (typeof SVGElement.prototype.contains === 'undefined') {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\src\polyfills.ts */"./src/polyfills.ts");
+module.exports = __webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\src\polyfills.ts */"./src/polyfills.ts");
 
 
 /***/ })

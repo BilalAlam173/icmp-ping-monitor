@@ -826,14 +826,14 @@ if(false) {}
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\node_modules\bootstrap\dist\css\bootstrap.css */"./node_modules/bootstrap/dist/css/bootstrap.css");
-__webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\node_modules\typeface-exo\index.css */"./node_modules/typeface-exo/index.css");
-__webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\node_modules\roboto-fontface\css\roboto\roboto-fontface.css */"./node_modules/roboto-fontface/css/roboto/roboto-fontface.css");
-__webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\node_modules\ionicons\scss\ionicons.scss */"./node_modules/ionicons/scss/ionicons.scss");
-__webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\node_modules\socicon\css\socicon.css */"./node_modules/socicon/css/socicon.css");
-__webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\node_modules\nebular-icons\scss\nebular-icons.scss */"./node_modules/nebular-icons/scss/nebular-icons.scss");
-__webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\node_modules\pace-js\templates\pace-theme-flash.tmpl.css */"./node_modules/pace-js/templates/pace-theme-flash.tmpl.css");
-module.exports = __webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\src\app\@theme\styles\styles.scss */"./src/app/@theme/styles/styles.scss");
+__webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\node_modules\bootstrap\dist\css\bootstrap.css */"./node_modules/bootstrap/dist/css/bootstrap.css");
+__webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\node_modules\typeface-exo\index.css */"./node_modules/typeface-exo/index.css");
+__webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\node_modules\roboto-fontface\css\roboto\roboto-fontface.css */"./node_modules/roboto-fontface/css/roboto/roboto-fontface.css");
+__webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\node_modules\ionicons\scss\ionicons.scss */"./node_modules/ionicons/scss/ionicons.scss");
+__webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\node_modules\socicon\css\socicon.css */"./node_modules/socicon/css/socicon.css");
+__webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\node_modules\nebular-icons\scss\nebular-icons.scss */"./node_modules/nebular-icons/scss/nebular-icons.scss");
+__webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\node_modules\pace-js\templates\pace-theme-flash.tmpl.css */"./node_modules/pace-js/templates/pace-theme-flash.tmpl.css");
+module.exports = __webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\src\app\@theme\styles\styles.scss */"./src/app/@theme/styles/styles.scss");
 
 
 /***/ })

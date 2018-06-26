@@ -2051,8 +2051,8 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 var global = /** @class */ (function () {
     function global() {
-        this.url = 'http://ping.elevate.tech/api/';
-        //url='http://localhost:3000/api/';
+        //  url='http://ping.elevate.tech/api/';
+        this.url = 'http://localhost:3000/api/';
         // url='http://127.0.0.1:3000/api/';
     }
     global = __decorate([
@@ -2271,7 +2271,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! F:\github\icmp-ping-monitor\frontend\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! D:\Documents\github\icmp-ping-monitor\frontend\src\main.ts */"./src/main.ts");
 
 
 /***/ })

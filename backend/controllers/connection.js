@@ -101,7 +101,19 @@ module.exports = {
         let connection = JSON.parse(JSON.stringify(con));
         delete connection._id;
         delete connection.__v;
-        connetionModel.findByIdAndUpdate(con._id, connection, {
+        connetionModel.update({
+            _id: con._id
+        }, {
+            $set: {
+                averagedLatency: con.averagedLatency,
+                downTimePercent: con.downTimePercent,
+                upTimePercent:con.upTimePercent,
+                pingCount:con.pingCount,
+                latencyThreshold_count:con.latencyThreshold_count,
+                statusThreshold_count:con.statusThreshold_count,
+                downTimePercentThreshold_count:con.downTimePercentThreshold_count,
+            }
+        }, {
             new: true
         }, (err, connection) => {
             if (err) {
@@ -119,9 +131,11 @@ module.exports = {
         });
     },
     truncate: async (req, res) => {
-        connectionModel.remove({},function(err){
-            if(!err){
-                res.json({message:'success'});
+        connectionModel.remove({}, function (err) {
+            if (!err) {
+                res.json({
+                    message: 'success'
+                });
             }
         });
     },
