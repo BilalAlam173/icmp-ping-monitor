@@ -54,7 +54,7 @@ module.exports = {
     update: async (req, res) => {
         let temp = await settingsModel.find({});
         const doc = temp[0];
-        let timePeriod =req.body.timePeriod?helperFns.toSeconds(req.body.timePeriod.value,req.body.timePeriod.unit):doc.timePeriod;
+        let timePeriod =req.body.timePeriod?req.body.timePeriod:doc.timePeriod;
         const settings = {
             sender_emailId: req.body.sender_emailId?req.body.sender_emailId:doc.sender_emailId,
             sender_emailPassword: req.body.sender_emailPassword?req.body.sender_emailPassword:doc.sender_emailPassword,
