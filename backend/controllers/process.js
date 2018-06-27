@@ -138,7 +138,6 @@ module.exports = async function processCtrl() {
 
           // calculate averaged metrics , if a change in timePeriod is detected,
           // caluclate radically with the new time else calculate incrementally
-          _calculateRadical(_connections[i]);
           _connections[i] = _imports.globalFlags.timePeriodChanged ?
             await _calculateRadical(_connections[i]) :
             await _calculateIncremental(_connections[i]);
