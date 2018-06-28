@@ -86,18 +86,12 @@ module.exports = {
                 return accumulator.concat(pings.reverse())
             }, [])
             .map((x) => {
-                let obj = x.connections.find((item) => {
-                    if (item.id.toHexString() == id) {
-                        return true;
-                    } else {
-                        console.log(item);
-                    }
-                })
+                let obj = x.connections.find((item) => item.id.toHexString() == id)
                 if (obj) {
                     obj.time = x.second;
                 } else {
-                  obj = {
-                        latency : 0,
+                    obj = {
+                        latency: 0,
                         downTime: 100,
                         time: x.second
                     }

@@ -123,13 +123,11 @@ module.exports = async function processCtrl() {
           _connections[i].pingCount++;
 
           //evaluate latency & status 
-          console.log('point-1');
           _connections[i].latency = error ? 0 : rcvd - sent;
           _connections[i].status = error ? _connections[i].status : 1;
 
 
           // adding connection ping's response into current ping object
-          console.log('point-2');
           ping.connections.push({
             id: _connections[i]._id,
             latency: _connections[i].latency || 200,
@@ -207,7 +205,6 @@ module.exports = async function processCtrl() {
 
     let totalPings = pingHistory.reduce((accumulator, x) => accumulator.concat(x.pings), [])
       .map((x) => x.connections.find((x) => x.id == connection.id));
-      console.log('point-3');
     let totalLatency = totalPings.reduce((accumulator, x) => accumulator + x.latency, 0);
     let totalDownTime = totalPings.reduce((accumulator, x) => accumulator + x.downTime, 0);
 
@@ -226,7 +223,6 @@ module.exports = async function processCtrl() {
      */
 
     let n = connection.pingCount < _settings.timePeriod ? connection.pingCount : _settings.timePeriod;
-    console.log('point-4');
     connection.averagedLatency = Math.floor(connection.averagedLatency + ((connection.latency - connection.averagedLatency) / n));
 
     /* a=last calculated average upTime
@@ -235,7 +231,6 @@ module.exports = async function processCtrl() {
      * @formula:latest avg value = a+(l-a)/n
      */
     let upTime = connection.upTimePercent / 100;
-    console.log('point-5');
     connection.upTimePercent = Math.floor(upTime + ((connection.latency >= 1 ? 1 : 0 - upTime) / n)) * 100;
     connection.downTimePercent = 100 - connection.upTimePercent;
 
