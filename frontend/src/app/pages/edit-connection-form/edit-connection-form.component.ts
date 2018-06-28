@@ -26,6 +26,7 @@ export class EditConnectionFormComponent implements OnInit {
       this._connectionService.edit(this.connection).subscribe(res=>{
         console.log(res);
         this.isLoading=false;
+        document.getElementById('modal-close').click();
       })
     }else{
       this._connectionService.add(this.connection).subscribe(res=>{

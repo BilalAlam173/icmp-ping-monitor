@@ -124,6 +124,7 @@ export class DashboardComponent implements OnDestroy {
   onDeleteConfirm(event): void {
     if (window.confirm('Are you sure you want to delete?')) {
       this.service.delete(event.data).subscribe((res) => {
+        this.loadData();
 
       });
       event.confirm.resolve();
@@ -134,18 +135,13 @@ export class DashboardComponent implements OnDestroy {
   onUserRowSelect($event): void {
     this._router.navigate([`/pages/detail/${$event.data._id}`]);
   }
-
-  onEditConfirm(event): void {
-    this.service.edit(event.newData).subscribe((res) => {
-
-    });
-    event.confirm.resolve();
-  }
   onAddConfirm(): void {
     this.connection
     this.isLoading = true;
     this.service.add(this.connection).subscribe((res) => {
       this.isLoading = false;
+      document.getElementById('modal-close').click();
+      this.loadData();
     },errResponse=>{
       this.isLoading=false;
       window.alert(errResponse.error.message?errResponse.error.message:'something went wrong!')

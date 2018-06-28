@@ -112,6 +112,7 @@ module.exports = {
                 latencyThreshold_count:con.latencyThreshold_count,
                 statusThreshold_count:con.statusThreshold_count,
                 downTimePercentThreshold_count:con.downTimePercentThreshold_count,
+                status:con.status,
             }
         }, {
             new: true
