@@ -5,6 +5,7 @@ const cors= require('cors');
 const route = require('./route');
 const process=require('./controllers/process');
 const app = express();
+const process_test = require('./controllers/process.test');
 app.use(function (req, res, next) {
   // res.header("Access-Control-Allow-Origin", "http://ping.elevate.tech/,http://localhost:4200");
   res.header("Access-Control-Allow-Origin", "*");
@@ -18,5 +19,6 @@ var corsOptions = {
 
 config(app);
 route(app);
+// process_test();
 process();
 

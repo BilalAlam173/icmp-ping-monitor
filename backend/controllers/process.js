@@ -230,9 +230,9 @@ module.exports = async function processCtrl() {
      * n=total pings to count average for
      * @formula:latest avg value = a+(l-a)/n
      */
-    let upTime = connection.upTimePercent / 100;
-    connection.upTimePercent = Math.floor(upTime + ((connection.latency >= 1 ? 1 : 0 - upTime) / n)) * 100;
-    connection.downTimePercent = 100 - connection.upTimePercent;
+    let upTime = connection.upTimePercent;
+        connection.upTimePercent = Math.round(upTime + (((connection.latency >= 1 ? 100 : 0) - upTime) / n));
+        connection.downTimePercent = 100 - connection.upTimePercent;
 
     return connection;
   }
