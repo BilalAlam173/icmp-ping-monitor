@@ -14,14 +14,15 @@ export class SettingComponent implements OnInit {
   };
   timeFilter=[];
   selectedTimePeriod:any;
+  isLoading=true;
 
   constructor(private _settingService:SettingService,private _detailService:DetailService) { }
 
   ngOnInit() {
     this._settingService.get().subscribe((res:any)=>{
+      this.isLoading=false;
     this.setting=res;
     this.timeFilter=this._detailService.timeFilter;
-    console.log(this.timeFilter);
     this.selectedTimePeriod=this.timeFilter.findIndex(x=>{
       console.log(x.seconds+"--"+(res.timePeriod*res.pingInterval));
       return x.seconds==(res.timePeriod*res.pingInterval)
@@ -40,9 +41,14 @@ export class SettingComponent implements OnInit {
   }
 
   onSubmit(){
+    this.isLoading=true;
     this._settingService.update(this.setting).subscribe((res)=>{
       this._settingService.update(this.setting).subscribe(res=>{
         console.log(res);
+        this.isLoading=false;
+      },err=>{
+        window.alert(err);
+        this.isLoading = false;
       });
     })
   }

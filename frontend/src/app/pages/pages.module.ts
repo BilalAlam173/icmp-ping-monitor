@@ -6,7 +6,7 @@ import { ThemeModule } from '../@theme/theme.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 import { SettingComponent } from './setting/setting.component';
 import { DetailComponent } from './detail/detail.component';
-import { StatusRenderComponent, DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoaderComponent } from './loader/loader.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { SmartTableService } from '../@core/data/smart-table.service';
@@ -29,14 +29,13 @@ const PAGES_COMPONENTS = [
     ...PAGES_COMPONENTS,
     SettingComponent,
     DetailComponent,
-    StatusRenderComponent,
     LoaderComponent,
     DashboardComponent,
     EditConnectionFormComponent
   ],
   providers:[SmartTableService],
   bootstrap:[LoaderComponent],
-  entryComponents: [StatusRenderComponent,DashboardComponent]
+  entryComponents: [DashboardComponent]
 })
 export class PagesModule {
 }

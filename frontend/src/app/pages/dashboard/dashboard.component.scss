@@ -1,0 +1,22 @@
+nb-card {
+  transform: translate3d(0, 0, 0);
+}
+.online{
+  color:green
+}
+.offline{
+  color:red;
+}
+a{
+  cursor: pointer;
+}
+a i{
+  font-size: 20px;
+}
+a i:hover{
+  color: rgba(255, 56, 106, 1);
+}
+.action{
+  width: 15px;
+  height: 15px;
+}

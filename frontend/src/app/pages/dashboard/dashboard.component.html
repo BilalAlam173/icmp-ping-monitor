@@ -98,13 +98,42 @@
     </div>
   </nb-card-header>
 
-  <nb-card-body *ngIf="settings">
+  <nb-card-body *ngIf="connections">
     <div class="row">
       <div class="col-lg-2"></div>
     </div>
-
-    <ng2-smart-table [settings]="settings" [source]="source" (userRowSelect)="onUserRowSelect($event)" (deleteConfirm)="onDeleteConfirm($event)"
+    <table class="table">
+      <thead>
+        <tr>
+          <td>Name/Title</td>
+          <td>IP Address</td>
+          <td>Status</td>
+          <td>Latency(ms)</td>
+          <td>uptime(%)</td>
+          <td>Loss(%)</td>
+          <td>Actions</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let connection of connections;let i = index">
+          <td>
+            <a style="cursor:pointer" title="view details" (click)="navigateToDetails(connection._id)">{{connection.name}}</a>
+          </td>
+          <td>{{connection.ip}}</td>
+          <td class="{{connection.status}}">{{connection.status}}</td>
+          <td>{{connection.averagedLatency}}</td>
+          <td>{{connection.upTimePercent}}</td>
+          <td>{{connection.downTimePercent}}</td>
+          <td>
+            <a title="delete connection" (click)="onDeleteConfirm(connection)">
+              <i class="nb-trash"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- <ng2-smart-table [settings]="settings" [source]="source" (userRowSelect)="onUserRowSelect($event)" (deleteConfirm)="onDeleteConfirm($event)"
       (createConfirm)="onAddConfirm($event)" (editConfirm)="onEditConfirm($event)">
-    </ng2-smart-table>
+    </ng2-smart-table> -->
   </nb-card-body>
 </nb-card>
