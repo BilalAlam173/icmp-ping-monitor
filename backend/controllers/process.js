@@ -47,7 +47,7 @@ module.exports = async function processCtrl() {
   // the main loop
   _loop = async () => {
 
-    console.log('ping initiated after the interval of ' + _settings.pingInterval + ' seconds')
+    // console.log('ping initiated after the interval of ' + _settings.pingInterval + ' seconds')
 
     // import the globals and settings
     _imports.globalFlags = require('../config/global');
@@ -136,6 +136,7 @@ module.exports = async function processCtrl() {
 
           // calculate averaged metrics , if a change in timePeriod is detected,
           // caluclate radically with the new time else calculate incrementally
+
           _connections[i] = _imports.globalFlags.timePeriodChanged ?
             await _calculateRadical(_connections[i]) :
             await _calculateIncremental(_connections[i]);
@@ -231,8 +232,8 @@ module.exports = async function processCtrl() {
      * @formula:latest avg value = a+(l-a)/n
      */
     let upTime = connection.upTimePercent;
-        connection.upTimePercent = Math.round(upTime + (((connection.latency >= 1 ? 100 : 0) - upTime) / n));
-        connection.downTimePercent = 100 - connection.upTimePercent;
+    connection.upTimePercent = Math.round(upTime + (((connection.latency >= 1 ? 100 : 0) - upTime) / n));
+    connection.downTimePercent = 100 - connection.upTimePercent;
 
     return connection;
   }

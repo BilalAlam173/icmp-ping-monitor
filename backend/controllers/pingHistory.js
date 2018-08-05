@@ -122,7 +122,7 @@ module.exports = {
 
         let n = lastHour.pings.length;
 
-        lastLeft /= pingInterval;
+        // lastLeft /= pingInterval;
 
         let required = n - lastLeft
 
